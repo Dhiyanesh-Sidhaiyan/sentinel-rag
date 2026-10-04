@@ -8,3 +8,4 @@ __pycache__/
 .env.local
 eval/report.json
 k8s/overlays/*/secrets.env
+.playwright-mcp/

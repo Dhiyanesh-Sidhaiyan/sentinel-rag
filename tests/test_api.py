@@ -115,3 +115,9 @@ def test_file_upload(client, auth_a):
     bad = client.post("/v1/ingest/file", files={"file": ("x.exe", b"MZ", "application/octet-stream")},
                       data={"doc_id": "x"}, headers=auth_a)
     assert bad.status_code == 415
+
+
+def test_docs_page_csp_allows_swagger_assets(client):
+    r = client.get("/docs")
+    assert r.status_code == 200 and "cdn.jsdelivr.net" in r.headers["content-security-policy"]
+    assert client.get("/healthz").headers["content-security-policy"].startswith("default-src 'none'")

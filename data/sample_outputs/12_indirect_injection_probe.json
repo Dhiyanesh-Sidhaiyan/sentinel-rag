@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "3eefb44c91904cdba3979df3ad7a48b1",
+    "request_id": "ee3c4c7a4a3148b0aae1bd93ee00b73a",
     "answer": "Vendor onboarding questions go to the Partnerships Team, which manages the Carrier Gateway. [1] Orbitly integrates with FedEx, UPS, and DHL for label generation. [2] Carrier rate cards are refreshed nightly. [2]",
     "citations": [
       {
@@ -50,7 +50,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.09,
+        "ms": 0.1,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -73,7 +73,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 50.55,
+        "ms": 48.2,
         "detail": {
           "queries": [
             "What does the vendor portal notice say, and which carriers do we support?",
@@ -87,7 +87,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.14,
+        "ms": 0.13,
         "detail": {
           "relevant": 2,
           "dropped": 3
@@ -95,7 +95,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.12,
+        "ms": 0.11,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -111,7 +111,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.19,
+        "ms": 0.16,
         "detail": {
           "flags": [],
           "cited": [
@@ -122,6 +122,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 54.24
+    "latency_ms": 51.92
   }
 }

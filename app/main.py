@@ -30,6 +30,12 @@ _SECURITY_HEADERS = {
     "Cache-Control": "no-store",
     "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
 }
+# Swagger UI (non-prod only) loads its JS/CSS from jsdelivr and runs one inline bootstrap script.
+_DOCS_CSP = (
+    "default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://fastapi.tiangolo.com; "
+    "connect-src 'self'; frame-ancestors 'none'"
+)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -52,7 +58,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     is_prod = settings.environment == "prod"
     app = FastAPI(
         title="Sentinel RAG", version=__version__, lifespan=lifespan,
-        description="Agentic GraphRAG API with hybrid retrieval and AI guardrails.",
+        description=(
+            "Agentic GraphRAG API with hybrid retrieval and AI guardrails.\n\n"
+            "**Auth:** click **Authorize** (top right) and paste your API key. It is sent as the "
+            "`X-API-Key` header on every `/v1` request."
+        ),
+        swagger_ui_parameters={"persistAuthorization": True},  # keep the key across page reloads
         docs_url=None if is_prod else "/docs", redoc_url=None, openapi_url=None if is_prod else "/openapi.json",
     )
     if settings.cors_origins:
@@ -79,6 +90,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             route = request.scope.get("route")
             HTTP_LATENCY.labels(request.method, getattr(route, "path", "unmatched"), str(status_code)).observe(elapsed)
         response.headers["X-Request-ID"] = request_id
+        if request.url.path.startswith("/docs"):
+            response.headers["Content-Security-Policy"] = _DOCS_CSP
         for k, v in _SECURITY_HEADERS.items():
             response.headers.setdefault(k, v)
         if request.url.path not in ("/healthz", "/readyz", "/metrics"):

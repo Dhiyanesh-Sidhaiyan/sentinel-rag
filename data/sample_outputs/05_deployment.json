@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "04922c179c284da88ec6f09b284d7a62",
+    "request_id": "1aa8b1d2ee5948dd8d2e3991a567430f",
     "answer": "Production deployments use canary releases managed by Argo Rollouts. [1] A canary is rolled back automatically if the error rate exceeds 1% or p99 latency regresses by more than 20%. [1] During the freeze only SEV-1 fixes may be deployed, and every deployment requires approval from the Incident Commander on duty. [2] Error budget burn above 2x for one hour pages the on-call engineer automatically. [3]",
     "citations": [
       {
@@ -57,7 +57,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.08,
+        "ms": 0.06,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -67,7 +67,7 @@
       },
       {
         "node": "plan",
-        "ms": 0.03,
+        "ms": 0.02,
         "detail": {
           "route": "retrieve",
           "sub_queries": [
@@ -78,7 +78,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 44.47,
+        "ms": 43.92,
         "detail": {
           "queries": [
             "When is a canary deployment rolled back automatically"
@@ -90,7 +90,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.19,
+        "ms": 0.14,
         "detail": {
           "relevant": 5,
           "dropped": 0
@@ -98,7 +98,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.32,
+        "ms": 0.25,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -106,7 +106,7 @@
       },
       {
         "node": "verify",
-        "ms": 0.28,
+        "ms": 0.22,
         "detail": {
           "grounded": true,
           "score": 1.0
@@ -114,7 +114,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.32,
+        "ms": 0.25,
         "detail": {
           "flags": [],
           "cited": [
@@ -126,6 +126,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 48.86
+    "latency_ms": 47.18
   }
 }

@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "6d2dfbe270854608a83493ed6c1b5305",
+    "request_id": "066e7ae4473d496f9312f73756b6bd5a",
     "answer": "Engineers receive one day of time off in lieu for every weekend on-call shift. [1] Time off in lieu must be used within 60 days and is requested through Workday. [1] The primary on-call engineer must acknowledge pages within 5 minutes during their shift. [2] On-call engineers should keep a laptop and a stable internet connection available at all times during their shift. [2]",
     "citations": [
       {
@@ -51,7 +51,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.2,
+        "ms": 0.18,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -75,7 +75,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 45.03,
+        "ms": 45.68,
         "detail": {
           "queries": [
             "My email is [REDACTED_EMAIL] and my phone is [REDACTED_PHONE]. How do I request time off in lieu after a weekend on-call shift"
@@ -87,7 +87,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.2,
+        "ms": 0.21,
         "detail": {
           "relevant": 3,
           "dropped": 2
@@ -95,7 +95,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.22,
+        "ms": 0.21,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -111,7 +111,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.32,
+        "ms": 0.27,
         "detail": {
           "flags": [],
           "cited": [
@@ -122,6 +122,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 49.04
+    "latency_ms": 49.87
   }
 }

@@ -9,7 +9,12 @@ from fastapi.security import APIKeyHeader
 
 from app.container import Container
 
-api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+api_key_header = APIKeyHeader(
+    name="X-API-Key",
+    scheme_name="ApiKey",
+    description="Tenant API key, sent as the `X-API-Key` header. Generate one with `make dev-key`.",
+    auto_error=False,
+)
 
 
 def get_container(request: Request) -> Container:

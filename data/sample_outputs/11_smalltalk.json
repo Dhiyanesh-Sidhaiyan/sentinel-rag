@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "d14009d64866436fb2b62c11dba1eb75",
+    "request_id": "4f4cf83116d349fa80952ab01ddf291f",
     "answer": "Hello! I'm Sentinel. Ask me anything about the documents in your knowledge base.",
     "citations": [],
     "graph_facts": [],
@@ -29,7 +29,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.04,
+        "ms": 0.03,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -55,7 +55,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.08,
+        "ms": 0.07,
         "detail": {
           "flags": [],
           "cited": []
@@ -63,6 +63,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 1.94
+    "latency_ms": 1.61
   }
 }

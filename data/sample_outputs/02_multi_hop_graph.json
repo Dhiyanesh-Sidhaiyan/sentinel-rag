@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "778cc8a890bb403795d2b5fa40ef9f45",
+    "request_id": "acf9182824234929946e0ac99f4d8133",
     "answer": "The Payments API depends on Ledger Service and Fraud Engine. [1] Fraud Engine is owned by Team Sentinel and integrates with Stripe Radar for real-time risk scoring. [1] Fraud Engine publishes to Kafka topic payments.risk-events. [1] The Payments API is the public entry point for all card and ACH transactions at Orbitly. [2] Related: Fraud Engine integrates with Stripe Radar; Fraud Engine owned by Team Sentinel; Fraud Engine publishes to Kafka.",
     "citations": [
       {
@@ -114,7 +114,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.11,
+        "ms": 0.08,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -124,7 +124,7 @@
       },
       {
         "node": "plan",
-        "ms": 0.04,
+        "ms": 0.03,
         "detail": {
           "route": "retrieve",
           "sub_queries": [
@@ -140,7 +140,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 50.37,
+        "ms": 46.93,
         "detail": {
           "queries": [
             "Which team owns the Fraud Engine and what does the Payments API depend on?",
@@ -157,7 +157,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.21,
+        "ms": 0.19,
         "detail": {
           "relevant": 3,
           "dropped": 2
@@ -165,7 +165,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.35,
+        "ms": 0.27,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -173,7 +173,7 @@
       },
       {
         "node": "verify",
-        "ms": 0.35,
+        "ms": 0.28,
         "detail": {
           "grounded": true,
           "score": 1.0
@@ -181,7 +181,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.38,
+        "ms": 0.26,
         "detail": {
           "flags": [],
           "cited": [
@@ -192,6 +192,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 55.1
+    "latency_ms": 50.59
   }
 }

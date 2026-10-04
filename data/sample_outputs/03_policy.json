@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "55e64ff42125406eae93879d93a40dba",
+    "request_id": "4af525cae323490d9320b453dd899937",
     "answer": "Database credentials are rotated automatically every 30 days. [1] Third-party API keys must be rotated at least every 90 days. [1] Any credential that is suspected to be exposed must be revoked and rotated immediately, and the exposure must be reported to the Security Team within 1 hour. [1] This policy applies to all credentials, API keys, certificates, and tokens used by Orbitly services and engineers. [2]",
     "citations": [
       {
@@ -50,7 +50,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.11,
+        "ms": 0.09,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -60,7 +60,7 @@
       },
       {
         "node": "plan",
-        "ms": 0.04,
+        "ms": 0.06,
         "detail": {
           "route": "retrieve",
           "sub_queries": [
@@ -75,7 +75,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 48.49,
+        "ms": 47.28,
         "detail": {
           "queries": [
             "How often must third-party API keys be rotated, and what happens if a credential is exposed?",
@@ -89,7 +89,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.2,
+        "ms": 0.15,
         "detail": {
           "relevant": 2,
           "dropped": 3
@@ -97,7 +97,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.17,
+        "ms": 0.12,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -105,7 +105,7 @@
       },
       {
         "node": "verify",
-        "ms": 0.2,
+        "ms": 0.14,
         "detail": {
           "grounded": true,
           "score": 1.0
@@ -113,7 +113,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.32,
+        "ms": 0.22,
         "detail": {
           "flags": [],
           "cited": [
@@ -124,6 +124,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 52.33
+    "latency_ms": 50.86
   }
 }

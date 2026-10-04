@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "4f695f8933864bc1a6f7b083f44a7d82",
+    "request_id": "bbb613660c044e769acb22c2b0691cee",
     "answer": "The on-call engineer escalates to the Incident Commander for every SEV-1. [1] The Incident Commander escalates to the VP of Platform Engineering if a SEV-1 lasts longer than 30 minutes. [1] For SEV-1 incidents the first status page update must be published within 15 minutes of declaration. [1] SEV-1 incidents require acknowledgement within 5 minutes and a status update every 30 minutes. [2]",
     "citations": [
       {
@@ -48,7 +48,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.09,
+        "ms": 0.07,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -58,7 +58,7 @@
       },
       {
         "node": "plan",
-        "ms": 0.04,
+        "ms": 0.03,
         "detail": {
           "route": "retrieve",
           "sub_queries": [
@@ -71,7 +71,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 44.63,
+        "ms": 44.23,
         "detail": {
           "queries": [
             "What are the escalation steps and response targets for a SEV-1 incident"
@@ -91,7 +91,7 @@
       },
       {
         "node": "generate",
-        "ms": 0.22,
+        "ms": 0.16,
         "detail": {
           "attempt": 1,
           "strict": false
@@ -99,7 +99,7 @@
       },
       {
         "node": "verify",
-        "ms": 0.23,
+        "ms": 0.15,
         "detail": {
           "grounded": true,
           "score": 1.0
@@ -107,7 +107,7 @@
       },
       {
         "node": "output_guard",
-        "ms": 0.32,
+        "ms": 0.23,
         "detail": {
           "flags": [],
           "cited": [
@@ -118,6 +118,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 48.73
+    "latency_ms": 47.47
   }
 }

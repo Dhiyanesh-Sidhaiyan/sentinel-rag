@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "757b4cb0e86048fd8c8b629a0f05a61c",
+    "request_id": "a7a14f02307842b99d0edda471f0392d",
     "answer": "I can't help with that request. It appears to try to override my instructions. Please rephrase your question about the knowledge base.",
     "citations": [],
     "graph_facts": [],
@@ -31,7 +31,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.11,
+        "ms": 0.14,
         "detail": {
           "blocked": true,
           "flags": [
@@ -45,6 +45,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 0.98
+    "latency_ms": 1.24
   }
 }

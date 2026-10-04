@@ -4,7 +4,7 @@
     "use_cache": false
   },
   "response": {
-    "request_id": "2450ff55e52a4101919df8242d2f0513",
+    "request_id": "b1fb6692ae954a339513195130cb14f1",
     "answer": "I don't have enough information in the knowledge base to answer that.",
     "citations": [],
     "graph_facts": [],
@@ -29,7 +29,7 @@
     "trace": [
       {
         "node": "input_guard",
-        "ms": 0.1,
+        "ms": 0.08,
         "detail": {
           "blocked": false,
           "flags": [],
@@ -52,7 +52,7 @@
       },
       {
         "node": "retrieve",
-        "ms": 44.47,
+        "ms": 44.41,
         "detail": {
           "queries": [
             "What is the capital of Australia"
@@ -64,7 +64,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.17,
+        "ms": 0.18,
         "detail": {
           "relevant": 0,
           "dropped": 5
@@ -72,14 +72,14 @@
       },
       {
         "node": "rewrite",
-        "ms": 0.02,
+        "ms": 0.03,
         "detail": {
           "rewritten": "capital australia"
         }
       },
       {
         "node": "retrieve",
-        "ms": 46.33,
+        "ms": 45.37,
         "detail": {
           "queries": [
             "capital australia"
@@ -91,7 +91,7 @@
       },
       {
         "node": "grade",
-        "ms": 0.17,
+        "ms": 0.2,
         "detail": {
           "relevant": 0,
           "dropped": 5
@@ -123,6 +123,6 @@
       }
     ],
     "cached": false,
-    "latency_ms": 96.17
+    "latency_ms": 94.99
   }
 }

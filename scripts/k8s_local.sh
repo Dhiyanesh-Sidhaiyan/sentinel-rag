@@ -65,16 +65,20 @@ up() {
   [[ -x "$ROOT/.venv/bin/python" ]] || fail "run 'make install' first"
   ensure_api_key
   ensure_secrets
-  say "Building image sentinel-rag:local"
+  say "Building image"
   docker build -q -t sentinel-rag:local "$ROOT" >/dev/null
-  say "Applying manifests (k8s/overlays/dev)"
-  kubectl apply -k "$OVERLAY"
+  # Unique tag per build: nodes cache images by tag, so re-using ":local" would keep running stale code.
+  local tag; tag="local-$(docker image inspect -f '{{.Id}}' sentinel-rag:local | cut -c8-19)"
+  docker tag sentinel-rag:local "sentinel-rag:$tag"
+  say "Image: sentinel-rag:$tag"
+  say "Applying manifests (k8s/overlays/dev) with image sentinel-rag:$tag"
+  # Render + pin the image in one apply, so each deploy triggers exactly ONE rolling update.
+  kubectl kustomize "$OVERLAY" | sed "s|image: sentinel-rag:local\$|image: sentinel-rag:$tag|" | kubectl apply -f -
   say "Waiting for datastores..."
   kubectl -n $NS rollout status statefulset/postgres --timeout=180s
   kubectl -n $NS rollout status statefulset/qdrant   --timeout=180s
   kubectl -n $NS rollout status deployment/valkey    --timeout=120s
-  say "Restarting API to pick up the freshly built image"
-  kubectl -n $NS rollout restart deployment/sentinel-rag >/dev/null
+  say "Waiting for the rolling update of the API"
   kubectl -n $NS rollout status deployment/sentinel-rag --timeout=180s
   status
   cat <<EOF
