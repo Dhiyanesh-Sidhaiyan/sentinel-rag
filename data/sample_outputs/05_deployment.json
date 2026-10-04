@@ -1,0 +1,131 @@
+{
+  "request": {
+    "question": "When is a canary deployment rolled back automatically?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "04922c179c284da88ec6f09b284d7a62",
+    "answer": "Production deployments use canary releases managed by Argo Rollouts. [1] A canary is rolled back automatically if the error rate exceeds 1% or p99 latency regresses by more than 20%. [1] During the freeze only SEV-1 fixes may be deployed, and every deployment requires approval from the Incident Commander on duty. [2] Error budget burn above 2x for one hour pages the on-call engineer automatically. [3]",
+    "citations": [
+      {
+        "ref": 1,
+        "doc_id": "deployment-standards",
+        "chunk_id": "deployment-standards#1-2f43644a3126",
+        "title": "Deployment Standards",
+        "section": "Progressive Delivery",
+        "score": 1.0,
+        "snippet": "Production deployments use canary releases managed by Argo Rollouts. Traffic shifts 5%, 25%, 50%, then 100%, with automated analysis against Datadog metrics at each step. A canary is rolled back automatically if the error rate exceeds 1% or p99 latency regresses by more than 20%."
+      },
+      {
+        "ref": 2,
+        "doc_id": "deployment-standards",
+        "chunk_id": "deployment-standards#2-5c51d8472942",
+        "title": "Deployment Standards",
+        "section": "Change Freeze",
+        "score": 0.6656,
+        "snippet": "A change freeze applies from December 15 to January 5 every year. During the freeze only SEV-1 fixes may be deployed, and every deployment requires approval from the Incident Commander on duty."
+      },
+      {
+        "ref": 3,
+        "doc_id": "payments-platform-architecture",
+        "chunk_id": "payments-platform-architecture#2-0823c4e615cb",
+        "title": "Payments Platform Architecture",
+        "section": "Service Levels",
+        "score": 0.6519,
+        "snippet": "The Payments API has an availability SLO of 99.95% measured monthly. The p99 latency objective is 300 ms for authorization requests. Error budget burn above 2x for one hour pages the on-call engineer automatically."
+      }
+    ],
+    "graph_facts": [],
+    "confidence": 0.909,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "When is a canary deployment rolled back automatically"
+      ],
+      "entities": [],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.08,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.03,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "When is a canary deployment rolled back automatically"
+          ],
+          "entities": []
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 44.47,
+        "detail": {
+          "queries": [
+            "When is a canary deployment rolled back automatically"
+          ],
+          "candidates": 5,
+          "graph_entities": [],
+          "graph_facts": 0
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.19,
+        "detail": {
+          "relevant": 5,
+          "dropped": 0
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.32,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.28,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.32,
+        "detail": {
+          "flags": [],
+          "cited": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 48.86
+  }
+}

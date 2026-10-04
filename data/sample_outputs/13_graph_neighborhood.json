@@ -1,0 +1,59 @@
+{
+  "entity": "payments api",
+  "facts": [
+    {
+      "subject": "Payments API",
+      "predicate": "depends on",
+      "object": "Fraud Engine",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Payments API",
+      "predicate": "depends on",
+      "object": "Ledger Service",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Payments API",
+      "predicate": "owned by",
+      "object": "Team Atlas",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Fraud Engine",
+      "predicate": "integrates with",
+      "object": "Stripe Radar",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Fraud Engine",
+      "predicate": "owned by",
+      "object": "Team Sentinel",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Fraud Engine",
+      "predicate": "publishes to",
+      "object": "Kafka",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Ledger Service",
+      "predicate": "owned by",
+      "object": "Team Atlas",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Ledger Service",
+      "predicate": "stores data in",
+      "object": "Aurora PostgreSQL",
+      "doc_id": "payments-platform-architecture"
+    },
+    {
+      "subject": "Team Atlas",
+      "predicate": "reports to",
+      "object": "VP of Platform Engineering",
+      "doc_id": "payments-platform-architecture"
+    }
+  ]
+}

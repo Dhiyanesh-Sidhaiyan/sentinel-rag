@@ -1,0 +1,69 @@
+name: ci
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -e ".[dev]"
+      - name: Lint
+        run: .venv/bin/ruff check app tests scripts
+      - name: Type-check
+        run: .venv/bin/mypy app
+      - name: Unit + API tests
+        run: .venv/bin/pytest -q
+      - name: RAG quality gate (retrieval, faithfulness, guardrails)
+        run: .venv/bin/python scripts/evaluate.py --report eval-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: eval-report, path: eval-report.json }
+
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render kustomize overlays
+        run: |
+          cp k8s/overlays/dev/secrets.env.example k8s/overlays/dev/secrets.env
+          kubectl kustomize k8s/overlays/dev  > /dev/null
+          kubectl kustomize k8s/overlays/prod > /dev/null
+
+  image:
+    needs: [test, manifests]
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write, security-events: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: sentinel-rag:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test container
+        run: |
+          docker run -d --name smoke -p 8000:8000 -e AUTH_ENABLED=true sentinel-rag:${{ github.sha }}
+          for i in $(seq 1 30); do curl -sf localhost:8000/readyz && break; sleep 1; done
+          curl -sf localhost:8000/healthz
+      - name: Vulnerability scan (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: sentinel-rag:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      # Push to registry + pin digest in k8s/overlays/prod on main (GitOps: Argo CD syncs the change)

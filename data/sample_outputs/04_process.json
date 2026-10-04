@@ -1,0 +1,123 @@
+{
+  "request": {
+    "question": "What are the escalation steps and response targets for a SEV-1 incident?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "4f695f8933864bc1a6f7b083f44a7d82",
+    "answer": "The on-call engineer escalates to the Incident Commander for every SEV-1. [1] The Incident Commander escalates to the VP of Platform Engineering if a SEV-1 lasts longer than 30 minutes. [1] For SEV-1 incidents the first status page update must be published within 15 minutes of declaration. [1] SEV-1 incidents require acknowledgement within 5 minutes and a status update every 30 minutes. [2]",
+    "citations": [
+      {
+        "ref": 1,
+        "doc_id": "incident-response-runbook",
+        "chunk_id": "incident-response-runbook#2-76785cc363a0",
+        "title": "Incident Response Runbook",
+        "section": "Escalation",
+        "score": 0.7333,
+        "snippet": "The on-call engineer escalates to the Incident Commander for every SEV-1. The Incident Commander escalates to the VP of Platform Engineering if a SEV-1 lasts longer than 30 minutes. For SEV-1 incidents the first status page update must be published within 15 minutes of declaratio..."
+      },
+      {
+        "ref": 2,
+        "doc_id": "incident-response-runbook",
+        "chunk_id": "incident-response-runbook#3-17faee065165",
+        "title": "Incident Response Runbook",
+        "section": "Response Targets",
+        "score": 0.7333,
+        "snippet": "SEV-1 incidents require acknowledgement within 5 minutes and a status update every 30 minutes. SEV-2 incidents require acknowledgement within 15 minutes. SEV-3 incidents are handled during business hours."
+      }
+    ],
+    "graph_facts": [],
+    "confidence": 0.893,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "What are the escalation steps and response targets for a SEV-1 incident"
+      ],
+      "entities": [],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.09,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.04,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "What are the escalation steps and response targets for a SEV-1 incident"
+          ],
+          "entities": [
+            "SEV"
+          ]
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 44.63,
+        "detail": {
+          "queries": [
+            "What are the escalation steps and response targets for a SEV-1 incident"
+          ],
+          "candidates": 5,
+          "graph_entities": [],
+          "graph_facts": 0
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.18,
+        "detail": {
+          "relevant": 3,
+          "dropped": 2
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.22,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.23,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.32,
+        "detail": {
+          "flags": [],
+          "cited": [
+            1,
+            2
+          ]
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 48.73
+  }
+}

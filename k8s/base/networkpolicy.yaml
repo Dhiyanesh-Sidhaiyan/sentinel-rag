@@ -1,0 +1,54 @@
+# Zero-trust networking: deny everything, then allow only the required flows.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sentinel-rag-api
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: ingress-nginx }
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: monitoring }
+      ports: [{ port: 8000, protocol: TCP }]
+  egress:
+    - to: [{ podSelector: { matchLabels: { app.kubernetes.io/name: qdrant } } }]
+      ports: [{ port: 6333, protocol: TCP }, { port: 6334, protocol: TCP }]
+    - to: [{ podSelector: { matchLabels: { app.kubernetes.io/name: postgres } } }]
+      ports: [{ port: 5432, protocol: TCP }]
+    - to: [{ podSelector: { matchLabels: { app.kubernetes.io/name: valkey } } }]
+      ports: [{ port: 6379, protocol: TCP }]
+    - to:   # cluster DNS
+        - namespaceSelector: {}
+          podSelector: { matchLabels: { k8s-app: kube-dns } }
+      ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]
+    - to:   # LLM gateway / managed datastores over TLS (narrow to egress-gateway CIDRs in prod)
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.169.254/32]
+      ports: [{ port: 443, protocol: TCP }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: datastores-from-api
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: In, values: [qdrant, postgres, valkey] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }

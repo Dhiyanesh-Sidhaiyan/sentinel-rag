@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-rag-config
+data:
+  ENVIRONMENT: "prod"
+  LOG_LEVEL: "INFO"
+  LOG_JSON: "true"
+  VECTOR_BACKEND: "qdrant"
+  QDRANT_URL: "http://qdrant:6333"
+  QDRANT_COLLECTION: "knowledge_chunks"
+  GRAPH_BACKEND: "postgres"
+  CACHE_BACKEND: "redis"
+  LLM_PROVIDER: "offline"          # set to "openai" + LLM_BASE_URL in the overlay for a real model
+  EMBEDDING_PROVIDER: "hash"
+  EMBEDDING_DIM: "512"
+  LLM_TIMEOUT_S: "30"
+  LLM_MAX_CONCURRENCY: "16"
+  RETRIEVAL_CANDIDATES: "12"
+  FINAL_TOP_K: "5"
+  MAX_AGENT_ITERATIONS: "2"
+  AUTH_ENABLED: "true"
+  RATE_LIMIT_PER_MINUTE: "120"
+  ANSWER_CACHE_TTL_S: "300"

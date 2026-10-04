@@ -1,0 +1,34 @@
+# Production: secrets from Vault/AWS SM via External Secrets Operator, managed Postgres + Valkey,
+# in-cluster Qdrant, real LLM through an OpenAI-compatible gateway, Prometheus Operator scraping.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sentinel-rag
+resources:
+  - ../../base
+  - ../../datastores/qdrant
+  - externalsecret.yaml
+  - servicemonitor.yaml
+images:
+  - name: sentinel-rag
+    newName: ghcr.io/your-org/sentinel-rag
+    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000  # pinned by CI
+configMapGenerator:
+  - name: sentinel-rag-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=prod
+      - LLM_PROVIDER=openai
+      - LLM_BASE_URL=https://llm-gateway.internal.example.com/v1
+      - LLM_MODEL=gpt-4o-mini
+      - EMBEDDING_PROVIDER=openai
+      - EMBEDDING_MODEL=text-embedding-3-small
+      - EMBEDDING_DIM=1536
+patches:
+  - target: { kind: StatefulSet, name: qdrant }
+    patch: |
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: 100Gi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value: { requests: { cpu: "1", memory: 4Gi }, limits: { memory: 8Gi } }

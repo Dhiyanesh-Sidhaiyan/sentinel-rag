@@ -1,0 +1,58 @@
+{
+  "tenant_id": "orbitly",
+  "documents": [
+    {
+      "doc_id": "deployment-standards",
+      "chunks_indexed": 4,
+      "chunks_quarantined": 0,
+      "triples_extracted": 0,
+      "pii_redactions": {},
+      "warnings": []
+    },
+    {
+      "doc_id": "incident-response-runbook",
+      "chunks_indexed": 5,
+      "chunks_quarantined": 0,
+      "triples_extracted": 2,
+      "pii_redactions": {},
+      "warnings": []
+    },
+    {
+      "doc_id": "oncall-handbook",
+      "chunks_indexed": 4,
+      "chunks_quarantined": 0,
+      "triples_extracted": 2,
+      "pii_redactions": {},
+      "warnings": []
+    },
+    {
+      "doc_id": "payments-platform-architecture",
+      "chunks_indexed": 4,
+      "chunks_quarantined": 0,
+      "triples_extracted": 9,
+      "pii_redactions": {},
+      "warnings": []
+    },
+    {
+      "doc_id": "secrets-management-policy",
+      "chunks_indexed": 5,
+      "chunks_quarantined": 0,
+      "triples_extracted": 2,
+      "pii_redactions": {},
+      "warnings": []
+    },
+    {
+      "doc_id": "vendor-faq-poisoned",
+      "chunks_indexed": 2,
+      "chunks_quarantined": 1,
+      "triples_extracted": 4,
+      "pii_redactions": {},
+      "warnings": [
+        "chunk 1 quarantined (indirect prompt injection: exfiltration,ignore_instructions,jailbreak_persona,reveal_system_prompt,role_override)"
+      ]
+    }
+  ],
+  "total_chunks": 24,
+  "total_triples": 19,
+  "latency_ms": 1120.67
+}

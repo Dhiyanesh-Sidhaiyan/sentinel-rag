@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  labels: { app.kubernetes.io/name: qdrant }
+spec:
+  selector: { app.kubernetes.io/name: qdrant }
+  ports:
+    - { name: http, port: 6333, targetPort: 6333 }
+    - { name: grpc, port: 6334, targetPort: 6334 }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qdrant
+  labels: { app.kubernetes.io/name: qdrant }
+spec:
+  serviceName: qdrant
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: qdrant }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: qdrant }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:v1.12.6-unprivileged
+          ports:
+            - { name: http, containerPort: 6333 }
+            - { name: grpc, containerPort: 6334 }
+          env:
+            - name: QDRANT__SERVICE__API_KEY
+              valueFrom: { secretKeyRef: { name: sentinel-rag-secrets, key: QDRANT_API_KEY } }
+            - { name: QDRANT__TELEMETRY_DISABLED, value: "true" }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { memory: 2Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /livez, port: http }
+            periodSeconds: 15
+          volumeMounts:
+            - { name: storage, mountPath: /qdrant/storage }
+            - { name: snapshots, mountPath: /qdrant/snapshots }
+      volumes:
+        - name: snapshots
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata: { name: storage }
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: { requests: { storage: 10Gi } }

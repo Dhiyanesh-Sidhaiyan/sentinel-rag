@@ -1,0 +1,128 @@
+{
+  "request": {
+    "question": "What is the capital of Australia?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "2450ff55e52a4101919df8242d2f0513",
+    "answer": "I don't have enough information in the knowledge base to answer that.",
+    "citations": [],
+    "graph_facts": [],
+    "confidence": 0.0,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "capital australia"
+      ],
+      "entities": [],
+      "rewrites": 1
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.1,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.03,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "What is the capital of Australia"
+          ],
+          "entities": [
+            "Australia"
+          ]
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 44.47,
+        "detail": {
+          "queries": [
+            "What is the capital of Australia"
+          ],
+          "candidates": 5,
+          "graph_entities": [],
+          "graph_facts": 0
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.17,
+        "detail": {
+          "relevant": 0,
+          "dropped": 5
+        }
+      },
+      {
+        "node": "rewrite",
+        "ms": 0.02,
+        "detail": {
+          "rewritten": "capital australia"
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 46.33,
+        "detail": {
+          "queries": [
+            "capital australia"
+          ],
+          "candidates": 5,
+          "graph_entities": [],
+          "graph_facts": 0
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.17,
+        "detail": {
+          "relevant": 0,
+          "dropped": 5
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.0,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.01,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.1,
+        "detail": {
+          "flags": [],
+          "cited": []
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 96.17
+  }
+}

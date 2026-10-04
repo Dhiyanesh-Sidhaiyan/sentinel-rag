@@ -1,0 +1,44 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sentinel-rag
+  labels: { release: kube-prometheus-stack }
+spec:
+  selector:
+    matchLabels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sentinel-rag-alerts
+  labels: { release: kube-prometheus-stack }
+spec:
+  groups:
+    - name: sentinel-rag
+      rules:
+        - alert: SentinelHighErrorRate
+          expr: |
+            sum(rate(http_request_duration_seconds_count{status=~"5.."}[5m]))
+              / sum(rate(http_request_duration_seconds_count[5m])) > 0.02
+          for: 10m
+          labels: { severity: page }
+          annotations: { summary: "Sentinel RAG 5xx rate above 2%" }
+        - alert: SentinelQueryLatencyHigh
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{route="/v1/query"}[5m]))) > 8
+          for: 10m
+          labels: { severity: warn }
+          annotations: { summary: "p95 /v1/query latency above 8s" }
+        - alert: SentinelLLMFailures
+          expr: sum(rate(llm_calls_total{outcome="error"}[5m])) / sum(rate(llm_calls_total[5m])) > 0.1
+          for: 5m
+          labels: { severity: warn }
+          annotations: { summary: "LLM error rate >10% - agent is running on heuristic fallbacks" }
+        - alert: SentinelInjectionSpike
+          expr: sum(increase(guardrail_events_total{type=~"prompt_injection|indirect_injection"}[15m])) > 50
+          labels: { severity: warn }
+          annotations: { summary: "Spike in prompt-injection attempts - possible attack" }

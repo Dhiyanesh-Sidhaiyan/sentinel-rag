@@ -1,0 +1,8 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sentinel-rag
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }

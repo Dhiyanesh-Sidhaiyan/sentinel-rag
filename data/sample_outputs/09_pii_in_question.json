@@ -1,0 +1,127 @@
+{
+  "request": {
+    "question": "My email is jane.doe@example.com and my phone is 415-555-0134. How do I request time off in lieu after a weekend on-call shift?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "6d2dfbe270854608a83493ed6c1b5305",
+    "answer": "Engineers receive one day of time off in lieu for every weekend on-call shift. [1] Time off in lieu must be used within 60 days and is requested through Workday. [1] The primary on-call engineer must acknowledge pages within 5 minutes during their shift. [2] On-call engineers should keep a laptop and a stable internet connection available at all times during their shift. [2]",
+    "citations": [
+      {
+        "ref": 1,
+        "doc_id": "oncall-handbook",
+        "chunk_id": "oncall-handbook#2-1b8910c36b18",
+        "title": "On-Call Handbook",
+        "section": "Compensation",
+        "score": 0.84,
+        "snippet": "Engineers receive one day of time off in lieu for every weekend on-call shift. Time off in lieu must be used within 60 days and is requested through Workday."
+      },
+      {
+        "ref": 2,
+        "doc_id": "oncall-handbook",
+        "chunk_id": "oncall-handbook#1-dd70dd9bff4f",
+        "title": "On-Call Handbook",
+        "section": "Expectations",
+        "score": 0.7103,
+        "snippet": "The primary on-call engineer must acknowledge pages within 5 minutes during their shift. A secondary on-call engineer is paged automatically if the primary does not acknowledge within 10 minutes. On-call engineers should keep a laptop and a stable internet connection available at..."
+      }
+    ],
+    "graph_facts": [],
+    "confidence": 0.91,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [
+        "EMAIL",
+        "PHONE"
+      ],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "My email is [REDACTED_EMAIL] and my phone is [REDACTED_PHONE]. How do I request time off in lieu after a weekend on-call shift"
+      ],
+      "entities": [],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.2,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": [
+            "EMAIL",
+            "PHONE"
+          ]
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.05,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "My email is [REDACTED_EMAIL] and my phone is [REDACTED_PHONE]. How do I request time off in lieu after a weekend on-call shift"
+          ],
+          "entities": []
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 45.03,
+        "detail": {
+          "queries": [
+            "My email is [REDACTED_EMAIL] and my phone is [REDACTED_PHONE]. How do I request time off in lieu after a weekend on-call shift"
+          ],
+          "candidates": 5,
+          "graph_entities": [],
+          "graph_facts": 0
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.2,
+        "detail": {
+          "relevant": 3,
+          "dropped": 2
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.22,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.22,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.32,
+        "detail": {
+          "flags": [],
+          "cited": [
+            1,
+            2
+          ]
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 49.04
+  }
+}

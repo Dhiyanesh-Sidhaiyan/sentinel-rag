@@ -1,0 +1,68 @@
+{
+  "request": {
+    "question": "hello",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "d14009d64866436fb2b62c11dba1eb75",
+    "answer": "Hello! I'm Sentinel. Ask me anything about the documents in your knowledge base.",
+    "citations": [],
+    "graph_facts": [],
+    "confidence": 1.0,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "direct",
+      "sub_queries": [
+        "hello"
+      ],
+      "entities": [],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.04,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.01,
+        "detail": {
+          "route": "direct",
+          "sub_queries": [
+            "hello"
+          ],
+          "entities": []
+        }
+      },
+      {
+        "node": "respond_direct",
+        "ms": 0.01,
+        "detail": {}
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.08,
+        "detail": {
+          "flags": [],
+          "cited": []
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 1.94
+  }
+}

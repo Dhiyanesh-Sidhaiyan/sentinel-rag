@@ -1,0 +1,54 @@
+# Local / dev cluster (docker-desktop, kind, minikube): everything in-cluster, 1 replica.
+#   cp secrets.env.example secrets.env   # fill values (file is git-ignored)
+#   kubectl apply -k k8s/overlays/dev
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sentinel-rag
+resources:
+  - ../../base
+  - ../../datastores/qdrant
+  - ../../datastores/postgres
+  - ../../datastores/valkey
+secretGenerator:
+  - name: sentinel-rag-secrets
+    envs: [secrets.env]
+generatorOptions:
+  disableNameSuffixHash: false   # hash suffix => pods roll automatically when secrets change
+images:
+  - name: sentinel-rag
+    newName: sentinel-rag
+    newTag: local
+configMapGenerator:
+  - name: sentinel-rag-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=dev
+      - LOG_LEVEL=DEBUG
+patches:
+  - target: { kind: Deployment, name: sentinel-rag }
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+  - target: { kind: HorizontalPodAutoscaler, name: sentinel-rag }
+    patch: |
+      - op: replace
+        path: /spec/minReplicas
+        value: 1
+      - op: replace
+        path: /spec/maxReplicas
+        value: 3
+  - target: { kind: PodDisruptionBudget, name: sentinel-rag }
+    patch: |
+      - op: replace
+        path: /spec/minAvailable
+        value: 0
+  - target: { kind: Ingress, name: sentinel-rag }
+    patch: |
+      - op: remove
+        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+      - op: remove
+        path: /spec/tls
+      - op: replace
+        path: /spec/rules/0/host
+        value: sentinel.localtest.me

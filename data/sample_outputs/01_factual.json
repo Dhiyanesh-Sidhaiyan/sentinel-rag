@@ -1,0 +1,183 @@
+{
+  "request": {
+    "question": "What is the availability SLO and p99 latency objective for the Payments API?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "76c1d5326dcb4abaac6a822a9e2edcb0",
+    "answer": "The Payments API has an availability SLO of 99.95% measured monthly. [1] The p99 latency objective is 300 ms for authorization requests. [1] The Payments API is the public entry point for all card and ACH transactions at Orbitly. [2] The Payments API is owned by Team Atlas. [2] Related: Payments API depends on Fraud Engine; Payments API depends on Ledger Service; Payments API owned by Team Atlas.",
+    "citations": [
+      {
+        "ref": 1,
+        "doc_id": "payments-platform-architecture",
+        "chunk_id": "payments-platform-architecture#2-0823c4e615cb",
+        "title": "Payments Platform Architecture",
+        "section": "Service Levels",
+        "score": 1.0,
+        "snippet": "The Payments API has an availability SLO of 99.95% measured monthly. The p99 latency objective is 300 ms for authorization requests. Error budget burn above 2x for one hour pages the on-call engineer automatically."
+      },
+      {
+        "ref": 2,
+        "doc_id": "payments-platform-architecture",
+        "chunk_id": "payments-platform-architecture#0-b2682c38fff1",
+        "title": "Payments Platform Architecture",
+        "section": "Overview",
+        "score": 0.6999,
+        "snippet": "The Payments API is the public entry point for all card and ACH transactions at Orbitly. The Payments API is owned by Team Atlas. Team Atlas reports to the VP of Platform Engineering. The service runs on Kubernetes in two regions (us-east-1 and us-west-2) in an active-active conf..."
+      }
+    ],
+    "graph_facts": [
+      {
+        "subject": "Payments API",
+        "predicate": "depends on",
+        "object": "Fraud Engine",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Payments API",
+        "predicate": "depends on",
+        "object": "Ledger Service",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Payments API",
+        "predicate": "owned by",
+        "object": "Team Atlas",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Fraud Engine",
+        "predicate": "integrates with",
+        "object": "Stripe Radar",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Fraud Engine",
+        "predicate": "owned by",
+        "object": "Team Sentinel",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Fraud Engine",
+        "predicate": "publishes to",
+        "object": "Kafka",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Ledger Service",
+        "predicate": "owned by",
+        "object": "Team Atlas",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Ledger Service",
+        "predicate": "stores data in",
+        "object": "Aurora PostgreSQL",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Team Atlas",
+        "predicate": "reports to",
+        "object": "VP of Platform Engineering",
+        "doc_id": "payments-platform-architecture"
+      }
+    ],
+    "confidence": 0.94,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "What is the availability SLO and p99 latency objective for the Payments API"
+      ],
+      "entities": [
+        "payments api"
+      ],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.1,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.14,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "What is the availability SLO and p99 latency objective for the Payments API"
+          ],
+          "entities": [
+            "SLO",
+            "Payments API"
+          ]
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 44.76,
+        "detail": {
+          "queries": [
+            "What is the availability SLO and p99 latency objective for the Payments API"
+          ],
+          "candidates": 5,
+          "graph_entities": [
+            "payments api"
+          ],
+          "graph_facts": 9
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.22,
+        "detail": {
+          "relevant": 3,
+          "dropped": 2
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.32,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.37,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.34,
+        "detail": {
+          "flags": [],
+          "cited": [
+            1,
+            2
+          ]
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 51.42
+  }
+}

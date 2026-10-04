@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sentinel-rag
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "6m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"          # required for SSE streaming
+    nginx.ingress.kubernetes.io/limit-rps: "50"                 # edge rate limit (app also limits per tenant)
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ~ ^/(metrics|docs|openapi.json) { return 404; }
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [sentinel.example.com]
+      secretName: sentinel-rag-tls
+  rules:
+    - host: sentinel.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: sentinel-rag, port: { name: http } }

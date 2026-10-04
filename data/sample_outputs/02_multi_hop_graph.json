@@ -1,0 +1,197 @@
+{
+  "request": {
+    "question": "Which team owns the Fraud Engine and what does the Payments API depend on?",
+    "use_cache": false
+  },
+  "response": {
+    "request_id": "778cc8a890bb403795d2b5fa40ef9f45",
+    "answer": "The Payments API depends on Ledger Service and Fraud Engine. [1] Fraud Engine is owned by Team Sentinel and integrates with Stripe Radar for real-time risk scoring. [1] Fraud Engine publishes to Kafka topic payments.risk-events. [1] The Payments API is the public entry point for all card and ACH transactions at Orbitly. [2] Related: Fraud Engine integrates with Stripe Radar; Fraud Engine owned by Team Sentinel; Fraud Engine publishes to Kafka.",
+    "citations": [
+      {
+        "ref": 1,
+        "doc_id": "payments-platform-architecture",
+        "chunk_id": "payments-platform-architecture#1-5038df79db07",
+        "title": "Payments Platform Architecture",
+        "section": "Dependencies",
+        "score": 1.0,
+        "snippet": "The Payments API depends on Ledger Service and Fraud Engine. Ledger Service stores data in Aurora PostgreSQL and is owned by Team Atlas. Fraud Engine is owned by Team Sentinel and integrates with Stripe Radar for real-time risk scoring. Fraud Engine publishes to Kafka topic payme..."
+      },
+      {
+        "ref": 2,
+        "doc_id": "payments-platform-architecture",
+        "chunk_id": "payments-platform-architecture#0-b2682c38fff1",
+        "title": "Payments Platform Architecture",
+        "section": "Overview",
+        "score": 0.8556,
+        "snippet": "The Payments API is the public entry point for all card and ACH transactions at Orbitly. The Payments API is owned by Team Atlas. Team Atlas reports to the VP of Platform Engineering. The service runs on Kubernetes in two regions (us-east-1 and us-west-2) in an active-active conf..."
+      }
+    ],
+    "graph_facts": [
+      {
+        "subject": "Fraud Engine",
+        "predicate": "integrates with",
+        "object": "Stripe Radar",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Fraud Engine",
+        "predicate": "owned by",
+        "object": "Team Sentinel",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Fraud Engine",
+        "predicate": "publishes to",
+        "object": "Kafka",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Payments API",
+        "predicate": "depends on",
+        "object": "Fraud Engine",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Payments API",
+        "predicate": "depends on",
+        "object": "Ledger Service",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Payments API",
+        "predicate": "owned by",
+        "object": "Team Atlas",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "HashiCorp Vault",
+        "predicate": "managed by",
+        "object": "Team Sentinel",
+        "doc_id": "secrets-management-policy"
+      },
+      {
+        "subject": "Ledger Service",
+        "predicate": "owned by",
+        "object": "Team Atlas",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Ledger Service",
+        "predicate": "stores data in",
+        "object": "Aurora PostgreSQL",
+        "doc_id": "payments-platform-architecture"
+      },
+      {
+        "subject": "Team Atlas",
+        "predicate": "reports to",
+        "object": "VP of Platform Engineering",
+        "doc_id": "payments-platform-architecture"
+      }
+    ],
+    "confidence": 0.971,
+    "grounded": true,
+    "guardrails": {
+      "blocked": false,
+      "block_reason": null,
+      "input_flags": [],
+      "output_flags": [],
+      "pii_redacted": [],
+      "injection_score": 0.0
+    },
+    "plan": {
+      "route": "retrieve",
+      "sub_queries": [
+        "Which team owns the Fraud Engine and what does the Payments API depend on?",
+        "Which team owns the Fraud Engine",
+        "does the Payments API depend on"
+      ],
+      "entities": [
+        "fraud engine",
+        "payments api"
+      ],
+      "rewrites": 0
+    },
+    "trace": [
+      {
+        "node": "input_guard",
+        "ms": 0.11,
+        "detail": {
+          "blocked": false,
+          "flags": [],
+          "injection_score": 0.0,
+          "pii": []
+        }
+      },
+      {
+        "node": "plan",
+        "ms": 0.04,
+        "detail": {
+          "route": "retrieve",
+          "sub_queries": [
+            "Which team owns the Fraud Engine and what does the Payments API depend on?",
+            "Which team owns the Fraud Engine",
+            "does the Payments API depend on"
+          ],
+          "entities": [
+            "Fraud Engine",
+            "Payments API"
+          ]
+        }
+      },
+      {
+        "node": "retrieve",
+        "ms": 50.37,
+        "detail": {
+          "queries": [
+            "Which team owns the Fraud Engine and what does the Payments API depend on?",
+            "Which team owns the Fraud Engine",
+            "does the Payments API depend on"
+          ],
+          "candidates": 5,
+          "graph_entities": [
+            "fraud engine",
+            "payments api"
+          ],
+          "graph_facts": 10
+        }
+      },
+      {
+        "node": "grade",
+        "ms": 0.21,
+        "detail": {
+          "relevant": 3,
+          "dropped": 2
+        }
+      },
+      {
+        "node": "generate",
+        "ms": 0.35,
+        "detail": {
+          "attempt": 1,
+          "strict": false
+        }
+      },
+      {
+        "node": "verify",
+        "ms": 0.35,
+        "detail": {
+          "grounded": true,
+          "score": 1.0
+        }
+      },
+      {
+        "node": "output_guard",
+        "ms": 0.38,
+        "detail": {
+          "flags": [],
+          "cited": [
+            1,
+            2
+          ]
+        }
+      }
+    ],
+    "cached": false,
+    "latency_ms": 55.1
+  }
+}
