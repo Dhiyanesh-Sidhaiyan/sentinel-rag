@@ -1,0 +1,1303 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kubernetes Hands-On</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1f2328;--muted:#5b6470;--card:#ffffff;--line:#e3e0d8;--accent:#b4532a;--code:#f3f1ec;--th:#f6f3ee}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16181c;--fg:#e6e6e6;--muted:#9aa3ad;--card:#1d2025;--line:#30343b;--accent:#f08a5d;--code:#23272e;--th:#22262c}}
+:root[data-theme="dark"]{--bg:#16181c;--fg:#e6e6e6;--muted:#9aa3ad;--card:#1d2025;--line:#30343b;--accent:#f08a5d;--code:#23272e;--th:#22262c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1240px;margin:0 auto}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 18px;border-right:1px solid var(--line)}
+nav .brand{font-weight:700;font-size:15px;margin-bottom:14px}
+nav ul{list-style:none;padding:0;margin:0} nav li a{display:block;padding:6px 10px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:14px}
+nav li a:hover,nav li a.active{background:var(--code);color:var(--fg)}
+main{padding:36px 48px 120px;min-width:0}
+h1{font-size:30px;line-height:1.25;margin:0 0 12px}
+h2{font-size:23px;margin:56px 0 14px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:18px;margin:34px 0 10px;color:var(--accent)}
+a{color:var(--accent)}
+blockquote{margin:16px 0;padding:12px 18px;background:var(--card);border-left:4px solid var(--accent);border-radius:6px}
+blockquote p{margin:4px 0}
+code{font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--line)}
+pre code{background:none;padding:0;overflow-wrap:normal}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--th)}
+.toggle{margin-top:18px;font-size:13px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:5px 10px;cursor:pointer}
+@media (max-width:860px){.layout{display:block} nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:16px} main{padding:20px 16px 80px}}
+@media print{nav{display:none} .layout{display:block}}
+</style></head><body><div class="layout">
+<nav><div class="brand">Kubernetes Hands-On</div><div class="toc">
+<ul>
+<li><a href="#part-0-before-you-start">Part 0 — Before you start</a></li>
+<li><a href="#part-1-the-one-idea-that-explains-all-of-kubernetes">Part 1 — The one idea that explains all of Kubernetes</a></li>
+<li><a href="#part-2-anatomy-of-your-cluster">Part 2 — Anatomy of YOUR cluster</a></li>
+<li><a href="#part-3-every-kubernetes-object-explained-with-your-project">Part 3 — Every Kubernetes object, explained with your project</a></li>
+<li><a href="#part-4-follow-one-request-through-the-cluster">Part 4 — Follow one request through the cluster</a></li>
+<li><a href="#part-5-what-make-k8s-up-does-line-by-line">Part 5 — What make k8s-up does, line by line</a></li>
+<li><a href="#part-6-hands-on-labs-do-them-in-order">Part 6 — Hands-on labs (do them in order)</a></li>
+<li><a href="#part-7-troubleshooting-playbook">Part 7 — Troubleshooting playbook</a></li>
+<li><a href="#part-8-kubectl-cheat-sheet">Part 8 — kubectl cheat sheet</a></li>
+<li><a href="#part-9-local-vs-production-aws-eks">Part 9 — Local vs production (AWS EKS)</a></li>
+<li><a href="#part-10-kubernetes-interview-questions-with-answers">Part 10 — Kubernetes interview questions (with answers)</a></li>
+<li><a href="#part-11-glossary">Part 11 — Glossary</a></li>
+<li><a href="#part-12-10-day-plan-3060-minday">Part 12 — 10-day plan (30–60 min/day)</a></li>
+</ul>
+</div>
+<button class="toggle" onclick="t()">Toggle theme</button></nav>
+<main><h1 id="kubernetes-hands-on-learn-k8s-with-your-own-project">Kubernetes Hands-On — Learn K8s with Your Own Project</h1>
+<blockquote>
+<p><strong>Who this is for:</strong> you know Docker a little, and Kubernetes not at all.
+<strong>How it works:</strong> every concept is explained in plain words, then shown on <strong>your real cluster</strong>
+(Docker Desktop, 4 nodes) running <strong>your real project</strong> (Sentinel RAG). Every command and output in this
+guide was run on your machine.</p>
+<p><strong>Golden rule:</strong> don't just read. Type every command. Predict the output <em>before</em> you press Enter.</p>
+</blockquote>
+<hr />
+<h2 id="part-0-before-you-start">Part 0 — Before you start</h2>
+<h3 id="what-you-need-running">What you need running</h3>
+<ol>
+<li>Docker Desktop → Settings → Kubernetes → <strong>enabled</strong> (yours: 4-node "kind" cluster).</li>
+<li>The project deployed:</li>
+</ol>
+<pre><code class="language-bash">cd /Users/dsidhaiyan/Project/sentinel-rag &amp;&amp; make k8s-up
+</code></pre>
+<h3 id="one-setting-already-made-for-you">One setting already made for you</h3>
+<p>Your default namespace is set to <code>sentinel-rag</code>, so you can type <code>kubectl get pods</code> instead of
+<code>kubectl get pods -n sentinel-rag</code>. (It was set with
+<code>kubectl config set-context --current --namespace=sentinel-rag</code>.)</p>
+<h3 id="how-to-read-commands-in-this-guide">How to read commands in this guide</h3>
+<ul>
+<li><code>kubectl &lt;verb&gt; &lt;resource&gt; &lt;name&gt; [flags]</code> — e.g. <code>kubectl describe pod postgres-0</code></li>
+<li>Flags for kubectl (like <code>-n</code>, <code>-o wide</code>) go <strong>before</strong> <code>--</code>. Anything <strong>after</strong> <code>--</code> runs inside the container.</li>
+<li>Don't type <code>&lt;...&gt;</code> literally — replace it with a real name.</li>
+</ul>
+<hr />
+<h2 id="part-1-the-one-idea-that-explains-all-of-kubernetes">Part 1 — The one idea that explains all of Kubernetes</h2>
+<h3 id="the-problem-kubernetes-solves">The problem Kubernetes solves</h3>
+<p>With Docker alone, <em>you</em> are the operator: you start containers, restart them when they crash, move them when a
+machine dies, add more when traffic grows, and wire them together. That doesn't scale past a few containers.</p>
+<h3 id="kubernetes-desired-state-robots-that-never-sleep">Kubernetes = "desired state" + robots that never sleep</h3>
+<p>You write a <strong>wish list</strong> in YAML ("I want 3 copies of my API, each with 384Mi memory, reachable on port 80").
+You hand it to Kubernetes. From then on, small programs called <strong>controllers</strong> run a loop forever:</p>
+<pre><code>        ┌──────────────────────────────────────────────┐
+        │  1. Read desired state (your YAML)           │
+        │  2. Look at actual state (what's running)    │
+        │  3. Different?  -&gt; take action to fix it     │
+        │  4. Sleep a moment, repeat forever           │
+        └──────────────────────────────────────────────┘
+</code></pre>
+<p>This is called the <strong>reconciliation loop</strong>. Almost every "magic" thing Kubernetes does is this loop:</p>
+<table>
+<thead>
+<tr>
+<th>You see</th>
+<th>What actually happened</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>You delete a pod and a new one appears</td>
+<td>Desired = 1 pod, actual = 0 → controller creates one</td>
+</tr>
+<tr>
+<td>You change the image and pods get replaced</td>
+<td>Desired image ≠ running image → controller rolls out new pods</td>
+</tr>
+<tr>
+<td>A node dies and pods move</td>
+<td>Desired pods on healthy nodes ≠ actual → rescheduled</td>
+</tr>
+<tr>
+<td>Traffic spikes and pods are added</td>
+<td>The autoscaler changes desired from 1 → 3 → controller creates 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interview line:</strong> <em>"Kubernetes is declarative: you describe the desired state, and controllers continuously
+reconcile actual state toward it."</em> Memorize this sentence — it answers half of beginner K8s questions.</p>
+<h3 id="declarative-vs-imperative">Declarative vs imperative</h3>
+<ul>
+<li><strong>Imperative</strong> = "do this now": <code>kubectl scale deploy/sentinel-rag --replicas=3</code></li>
+<li><strong>Declarative</strong> = "this is how it should be": the YAML in <code>k8s/</code> + <code>kubectl apply</code></li>
+</ul>
+<p>Production uses declarative (YAML in Git = source of truth). Imperative commands are for learning and emergencies —
+and the next <code>make k8s-up</code> will <strong>overwrite</strong> them (you'll see this in Lab 6).</p>
+<hr />
+<h2 id="part-2-anatomy-of-your-cluster">Part 2 — Anatomy of YOUR cluster</h2>
+<h3 id="21-cluster-and-nodes">2.1 Cluster and nodes</h3>
+<pre><code class="language-bash">kubectl get nodes -o wide
+</code></pre>
+<p>Your output:</p>
+<pre><code>NAME                    STATUS   ROLES           VERSION   INTERNAL-IP
+desktop-control-plane   Ready    control-plane   v1.36.1   172.20.0.2
+desktop-worker          Ready    &lt;none&gt;          v1.36.1   172.20.0.3
+desktop-worker2         Ready    &lt;none&gt;          v1.36.1   172.20.0.5
+desktop-worker3         Ready    &lt;none&gt;          v1.36.1   172.20.0.4
+</code></pre>
+<ul>
+<li><strong>Cluster</strong> = the whole system: a group of machines managed as one.</li>
+<li><strong>Node</strong> = one machine (VM or physical server) in the cluster. In Docker Desktop's "kind" mode, each node is
+  actually a container pretending to be a machine — perfect for learning, same behavior as real servers.</li>
+<li><strong>Control-plane node</strong> = the "brain". <strong>Worker nodes</strong> = the "muscle" where your apps run.</li>
+</ul>
+<p>Your control plane has a <strong>taint</strong> so your apps never run there:</p>
+<pre><code class="language-bash">kubectl describe node desktop-control-plane | grep -i taints
+</code></pre>
+<pre><code>Taints:             node-role.kubernetes.io/control-plane:NoSchedule
+</code></pre>
+<p>A <strong>taint</strong> is a "keep out" sign on a node. Only pods with a matching <strong>toleration</strong> can be scheduled there.</p>
+<h3 id="22-whats-inside-the-brain-control-plane">2.2 What's inside the brain (control plane)</h3>
+<pre><code class="language-bash">kubectl get pods -n kube-system -o wide
+</code></pre>
+<p>You'll see these system components — <strong>know all four for interviews</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Job</th>
+<th>Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kube-apiserver</code></td>
+<td>The front door. Every <code>kubectl</code> command, every controller talks only to it</td>
+<td>Reception desk</td>
+</tr>
+<tr>
+<td><code>etcd</code></td>
+<td>Database storing the whole cluster state (all your YAML, live status)</td>
+<td>The filing cabinet</td>
+</tr>
+<tr>
+<td><code>kube-scheduler</code></td>
+<td>Decides <strong>which node</strong> a new pod should run on</td>
+<td>Seating planner</td>
+</tr>
+<tr>
+<td><code>kube-controller-manager</code></td>
+<td>Runs the reconciliation loops (Deployments, ReplicaSets, nodes...)</td>
+<td>Managers checking work</td>
+</tr>
+<tr>
+<td><code>coredns</code></td>
+<td>Cluster DNS: turns the name <code>postgres</code> into an IP</td>
+<td>Phone book</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-what-runs-on-every-worker-node">2.3 What runs on every worker node</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>kubelet</code></td>
+<td>Agent on each node: starts/stops containers, runs health probes, reports status</td>
+</tr>
+<tr>
+<td>container runtime (<code>containerd</code>)</td>
+<td>Actually runs containers (like Docker engine)</td>
+</tr>
+<tr>
+<td><code>kube-proxy</code></td>
+<td>Programs networking rules so Service IPs route to pods</td>
+</tr>
+<tr>
+<td><code>kindnet</code></td>
+<td>The network plugin (CNI): gives pods IPs and <strong>enforces NetworkPolicies</strong></td>
+</tr>
+</tbody>
+</table>
+<p>You saw <code>kindnet-*</code> and <code>kube-proxy-*</code> once <strong>per node</strong> — they're <strong>DaemonSets</strong> (a DaemonSet = "run one copy on
+every node").</p>
+<h3 id="24-what-happens-when-you-run-kubectl-apply">2.4 What happens when you run <code>kubectl apply</code></h3>
+<pre><code>kubectl apply -f deployment.yaml
+   │
+   ▼
+kube-apiserver ──validates, checks permissions &amp; Pod Security──► saves to etcd
+   │
+   ▼
+Deployment controller: &quot;need a ReplicaSet&quot;  ──► ReplicaSet controller: &quot;need 1 pod&quot;
+   │
+   ▼
+kube-scheduler: &quot;desktop-worker has room&quot; ──► assigns pod to node
+   │
+   ▼
+kubelet on desktop-worker: pulls image, starts container, runs probes, reports &quot;Running/Ready&quot;
+</code></pre>
+<h3 id="25-the-projects-full-picture-inside-the-cluster">2.5 The project's full picture inside the cluster</h3>
+<pre><code>                         Namespace: sentinel-rag
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │                                                                          │
+  │  Service sentinel-rag (10.96.29.200:80)                                  │
+  │        │  load-balances to all READY api pods                            │
+  │        ▼                                                                 │
+  │  Deployment sentinel-rag ─► ReplicaSet ─► Pod(s)  [FastAPI + LangGraph]  │
+  │        │ env from ConfigMap sentinel-rag-config + Secret sentinel-rag-…  │
+  │        │                                                                 │
+  │        ├──► Service postgres:5432 ─► StatefulSet postgres ─► postgres-0 ─► PVC 5Gi
+  │        ├──► Service qdrant:6333   ─► StatefulSet qdrant   ─► qdrant-0   ─► PVC 10Gi
+  │        └──► Service valkey:6379   ─► Deployment valkey    ─► valkey-…   (no disk)
+  │                                                                          │
+  │  HPA (scales api 1..3)   PDB   NetworkPolicies (firewall)   Ingress      │
+  └──────────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<p>See it all at once:</p>
+<pre><code class="language-bash">kubectl get all,cm,secret,pvc,hpa,pdb,netpol
+</code></pre>
+<hr />
+<h2 id="part-3-every-kubernetes-object-explained-with-your-project">Part 3 — Every Kubernetes object, explained with your project</h2>
+<p>Each section: <strong>What → Why → Your YAML → Commands → Interview line.</strong></p>
+<h3 id="31-namespace-a-folder-for-resources">3.1 Namespace — a folder for resources</h3>
+<p><strong>What:</strong> a logical partition inside a cluster. Names must be unique <em>within</em> a namespace.
+<strong>Why:</strong> separate teams/apps/environments, apply security rules and quotas per namespace, delete everything at once.</p>
+<p>Your YAML (<a href="../k8s/base/namespace.yaml">k8s/base/namespace.yaml</a>):</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Namespace
+metadata:
+  name: sentinel-rag
+  labels:
+    pod-security.kubernetes.io/enforce: restricted   # strictest Pod Security level (see 3.15)
+</code></pre>
+<pre><code class="language-bash">kubectl get namespaces
+kubectl get pods -A          # -A = all namespaces
+</code></pre>
+<blockquote>
+<p>This is why <code>kubectl get pods</code> "couldn't find" your pods earlier — they're in <code>sentinel-rag</code>, not <code>default</code>.</p>
+</blockquote>
+<p><strong>Interview:</strong> <em>"Namespaces provide scoping for names, RBAC, quotas and policies. They are not a hard security
+boundary by themselves — you add NetworkPolicies and RBAC for isolation."</em></p>
+<h3 id="32-pod-the-smallest-unit">3.2 Pod — the smallest unit</h3>
+<p><strong>What:</strong> one or more containers that share an IP address and storage, scheduled together on one node. Usually
+1 container = 1 pod.
+<strong>Key fact:</strong> pods are <strong>mortal and replaceable</strong>. They get a new name and new IP when recreated. You almost never
+create pods directly — a controller (Deployment/StatefulSet) creates them for you.</p>
+<pre><code class="language-bash">kubectl get pods -o wide
+</code></pre>
+<pre><code>NAME                            READY   STATUS    RESTARTS   IP           NODE
+postgres-0                      1/1     Running   0          ...          desktop-worker
+qdrant-0                        1/1     Running   0          ...          desktop-worker2
+sentinel-rag-666d4d954d-bz4v5   1/1     Running   0          ...          desktop-worker
+valkey-5b9d54755b-g2dx8         1/1     Running   0          ...          desktop-worker2
+</code></pre>
+<p>Reading a pod name: <code>sentinel-rag-666d4d954d-bz4v5</code>
+- <code>sentinel-rag</code> → the Deployment
+- <code>666d4d954d</code> → the ReplicaSet (a hash of the pod template = <strong>one version</strong> of your app)
+- <code>bz4v5</code> → random pod suffix</p>
+<p><code>READY 1/1</code> = 1 of 1 containers passed the readiness probe. <code>RESTARTS</code> = how often the container crashed and was
+restarted by kubelet.</p>
+<p>Look inside:</p>
+<pre><code class="language-bash">kubectl describe pod postgres-0          # full details + Events at the bottom (read Events first!)
+kubectl logs deploy/sentinel-rag         # app logs (JSON lines from structlog)
+kubectl exec -it deploy/sentinel-rag -- sh    # shell inside the API container (type exit to leave)
+</code></pre>
+<p><strong>Pod phases:</strong> <code>Pending</code> (waiting for a node / image) → <code>Running</code> → <code>Succeeded</code> / <code>Failed</code>.
+<code>CrashLoopBackOff</code> is not a phase — it means "crashed, kubelet is waiting longer and longer before retrying".</p>
+<h3 id="33-replicaset-keep-n-identical-pods-running">3.3 ReplicaSet — "keep N identical pods running"</h3>
+<p><strong>What:</strong> a controller that ensures exactly N copies of a pod template exist.
+You never create these yourself — Deployments create one ReplicaSet <strong>per version</strong>.</p>
+<pre><code class="language-bash">kubectl get rs -l app.kubernetes.io/component=api \
+  -o custom-columns='REPLICASET:.metadata.name,PODS:.spec.replicas,IMAGE:.spec.template.spec.containers[0].image'
+</code></pre>
+<p>Your real output — your deploy history:</p>
+<pre><code>REPLICASET                PODS   IMAGE
+sentinel-rag-dfb5ffb6d    0      sentinel-rag:local-b31976754df1   &lt;- docs page fix
+sentinel-rag-c7ff6d56     0      sentinel-rag:local-b160e48af5f9   &lt;- Authorize button change
+sentinel-rag-666d4d954d   1      sentinel-rag:local-6e7111b12388   &lt;- current version
+</code></pre>
+<p>Old ReplicaSets are kept at 0 pods so <code>kubectl rollout undo</code> can go back <strong>instantly</strong>.</p>
+<h3 id="34-deployment-for-stateless-apps-your-api-valkey">3.4 Deployment — for stateless apps (your API, Valkey)</h3>
+<p><strong>What:</strong> manages ReplicaSets to give you <strong>rolling updates</strong> and <strong>rollbacks</strong>.
+<strong>Use for:</strong> anything where every copy is identical and disposable (web servers, APIs, workers).</p>
+<p>Key parts of your <a href="../k8s/base/deployment.yaml">deployment.yaml</a>:</p>
+<pre><code class="language-yaml">kind: Deployment
+spec:
+  replicas: 3                       # dev overlay patches this to 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%                 # may create extra pods during an update
+      maxUnavailable: 0             # never go below desired count -&gt; zero downtime
+  selector:
+    matchLabels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }
+  template:                         # &lt;- the POD template. Changing anything here = new version
+    metadata:
+      labels: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }
+    spec:
+      containers:
+        - name: api
+          image: sentinel-rag
+</code></pre>
+<p><strong>Labels &amp; selectors — the glue of Kubernetes.</strong> Labels are key/value tags on objects. A <strong>selector</strong> finds
+objects by label. The Deployment finds <em>its</em> pods by <code>app.kubernetes.io/name=sentinel-rag</code> +
+<code>component=api</code>; the Service finds pods to send traffic to the <strong>same way</strong>. Nothing is linked by name — only labels.</p>
+<pre><code class="language-bash">kubectl get pods --show-labels
+kubectl get pods -l app.kubernetes.io/component=api       # select by label
+</code></pre>
+<p><strong>Rolling update, step by step</strong> (what happened every time I deployed your code changes):</p>
+<pre><code>desired image changes  -&gt;  new ReplicaSet created
+   new pod starts  -&gt;  readinessProbe passes  -&gt;  Service starts sending it traffic
+   old pod gets SIGTERM  -&gt;  preStop sleep 10s  -&gt;  graceful shutdown  -&gt;  deleted
+</code></pre>
+<pre><code class="language-bash">kubectl rollout status deploy/sentinel-rag
+kubectl rollout history deploy/sentinel-rag
+kubectl rollout undo deploy/sentinel-rag           # back to the previous version
+kubectl rollout restart deploy/sentinel-rag        # new pods, SAME image (e.g. after config change)
+</code></pre>
+<h3 id="35-service-a-stable-address-for-changing-pods">3.5 Service — a stable address for changing pods</h3>
+<p><strong>Problem:</strong> pods die and get new IPs. How does the API find Postgres?
+<strong>What:</strong> a Service gives a <strong>stable virtual IP + DNS name</strong> and load-balances to all <strong>ready</strong> pods matching its selector.</p>
+<pre><code class="language-bash">kubectl get svc
+</code></pre>
+<pre><code>NAME           TYPE        CLUSTER-IP      PORT(S)
+postgres       ClusterIP   10.96.131.28    5432/TCP
+qdrant         ClusterIP   10.96.66.82     6333/TCP,6334/TCP
+sentinel-rag   ClusterIP   10.96.29.200    80/TCP
+valkey         ClusterIP   10.96.158.198   6379/TCP
+</code></pre>
+<p>Your <a href="../k8s/base/service.yaml">service.yaml</a>:</p>
+<pre><code class="language-yaml">kind: Service
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: sentinel-rag, app.kubernetes.io/component: api }
+  ports:
+    - { name: http, port: 80, targetPort: http }   # Service port 80 -&gt; container port &quot;http&quot; (8000)
+</code></pre>
+<p><strong>DNS — how your code connects to <code>postgres</code>.</strong> The API's config says <code>QDRANT_URL=http://qdrant:6333</code> and
+<code>postgres@postgres:5432</code>. CoreDNS resolves those names to the Service IP. Proven on your cluster:</p>
+<pre><code class="language-bash">kubectl exec deploy/sentinel-rag -- python -c &quot;import socket;print(socket.gethostbyname('postgres'))&quot;
+</code></pre>
+<pre><code>10.96.131.28
+</code></pre>
+<p>Full DNS name: <code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code> → <code>postgres.sentinel-rag.svc.cluster.local</code>.
+Short name <code>postgres</code> works inside the same namespace.</p>
+<p><strong>Which pods are behind a Service right now?</strong></p>
+<pre><code class="language-bash">kubectl get endpointslices -l kubernetes.io/service-name=sentinel-rag \
+  -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]}{&quot;  ready=&quot;}{.conditions.ready}{&quot;\n&quot;}{end}'
+</code></pre>
+<pre><code>10.244.3.6  ready=true
+10.244.1.9  ready=true
+</code></pre>
+<p>Every matching pod is listed, but traffic goes <strong>only</strong> to endpoints with <code>ready=true</code>. That's how readiness
+probes take broken pods out of rotation without killing them.</p>
+<p><strong>Service types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Reachable from</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ClusterIP</code> (yours)</td>
+<td>inside the cluster only</td>
+<td>internal services — the default and most common</td>
+</tr>
+<tr>
+<td><code>NodePort</code></td>
+<td><code>&lt;any node IP&gt;:30000-32767</code></td>
+<td>quick demos, rarely in production</td>
+</tr>
+<tr>
+<td><code>LoadBalancer</code></td>
+<td>the internet, via a cloud load balancer (AWS NLB/ALB)</td>
+<td>exposing services in the cloud</td>
+</tr>
+<tr>
+<td>Headless (<code>clusterIP: None</code>)</td>
+<td>DNS returns pod IPs directly</td>
+<td>StatefulSet peer discovery (e.g. DB clusters)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>port-forward</strong> — your laptop's tunnel into the cluster (dev only):</p>
+<pre><code class="language-bash">kubectl port-forward svc/sentinel-rag 8000:80     # localhost:8000 -&gt; Service port 80
+</code></pre>
+<p>Note: port-forward attaches to <strong>one pod</strong>. If that pod is replaced (every deploy), restart the port-forward.</p>
+<h3 id="36-configmap-non-secret-configuration">3.6 ConfigMap — non-secret configuration</h3>
+<p><strong>What:</strong> key/value config stored in the cluster, injected into pods as env vars or files.
+<strong>Why:</strong> the <strong>same image</strong> runs in dev and prod; only config changes (12-factor app).</p>
+<pre><code class="language-bash">kubectl get configmap sentinel-rag-config -o yaml
+</code></pre>
+<p>Your pod loads it all as env vars (<a href="../k8s/base/deployment.yaml">deployment.yaml</a>):</p>
+<pre><code class="language-yaml">envFrom:
+  - configMapRef: { name: sentinel-rag-config }   # every key becomes an env var: LOG_LEVEL=DEBUG ...
+  - secretRef:    { name: sentinel-rag-secrets }
+</code></pre>
+<p>⚠️ <strong>Gotcha:</strong> env vars are read when the container <strong>starts</strong>. Editing a ConfigMap does <strong>not</strong> change running
+pods — you must <code>kubectl rollout restart</code> (Lab 9 proves it). Kustomize's <code>configMapGenerator</code> can add a hash
+suffix to the name so a config change forces a rollout automatically — your Secret uses this.</p>
+<h3 id="37-secret-sensitive-configuration">3.7 Secret — sensitive configuration</h3>
+<pre><code class="language-bash">kubectl get secrets
+kubectl describe $(kubectl get secret -o name | grep sentinel-rag-secrets)
+</code></pre>
+<p><code>describe</code> shows <strong>key names and sizes only</strong>, never values:</p>
+<pre><code>Data
+====
+API_KEYS_SHA256:    ... bytes
+POSTGRES_DSN:       ... bytes
+POSTGRES_PASSWORD:  ... bytes
+QDRANT_API_KEY:     ... bytes
+REDIS_URL:          ... bytes
+</code></pre>
+<p>Secret name is <code>sentinel-rag-secrets-kkmmf5kgbt</code> — the <strong>hash suffix</strong> comes from Kustomize's <code>secretGenerator</code>.
+Change a secret → new name → Deployment template changes → pods roll automatically.</p>
+<p>🔐 <strong>Critical truth:</strong> Secrets are only <strong>base64-encoded, not encrypted</strong>. Anyone with read access can decode them.
+Real protection = RBAC (who can read secrets) + encryption-at-rest in etcd + an external secret manager.
+That's why prod uses <strong>External Secrets Operator + Vault</strong> (<a href="../k8s/overlays/prod/externalsecret.yaml">externalsecret.yaml</a>):
+the secret lives in Vault, ESO syncs it into the cluster, nothing secret is ever in Git.</p>
+<p>Never paste secret values into chat, tickets or logs.</p>
+<h3 id="38-statefulset-persistentvolume-for-databases-postgres-qdrant">3.8 StatefulSet + PersistentVolume — for databases (Postgres, Qdrant)</h3>
+<p><strong>Why not a Deployment for Postgres?</strong> Deployment pods are interchangeable with random names and no own disk.
+A database needs:</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>StatefulSet gives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stable identity</td>
+<td>Names <code>postgres-0</code>, <code>qdrant-0</code> — same name after restart</td>
+</tr>
+<tr>
+<td>Its own permanent disk</td>
+<td><code>volumeClaimTemplates</code> → one PVC per pod, <strong>re-attached</strong> to the same pod forever</td>
+</tr>
+<tr>
+<td>Ordered start/stop</td>
+<td><code>-0</code> starts before <code>-1</code>, important for DB primaries/replicas</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Storage chain — learn these 3 words:</strong></p>
+<pre><code>PVC (PersistentVolumeClaim)  = &quot;I need 5Gi of disk&quot;            &lt;- the pod's request
+PV  (PersistentVolume)       = an actual piece of disk          &lt;- created to satisfy the claim
+StorageClass                 = HOW disks are created            &lt;- yours: rancher.io/local-path
+                               (in AWS: gp3 EBS volumes)
+</code></pre>
+<pre><code class="language-bash">kubectl get pvc
+kubectl get pv
+kubectl get storageclass
+</code></pre>
+<p>Your PVCs are <code>data-postgres-0</code> (5Gi) and <code>storage-qdrant-0</code> (10Gi).</p>
+<p><strong>Proof that data survives pod death</strong> (run on your cluster):</p>
+<pre><code class="language-bash">kubectl exec postgres-0 -- psql -U sentinel -d sentinel -tAc &quot;select count(*) from kg_triples&quot;   # 19
+kubectl delete pod postgres-0
+kubectl exec postgres-0 -- psql -U sentinel -d sentinel -tAc &quot;select count(*) from kg_triples&quot;   # still 19
+</code></pre>
+<p>Same name, same disk, same data.</p>
+<p><strong>Important local detail — disks are pinned to nodes:</strong></p>
+<pre><code class="language-bash">kubectl get pv -o custom-columns='CLAIM:.spec.claimRef.name,NODE:.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0]'
+</code></pre>
+<pre><code>CLAIM              NODE
+data-postgres-0    desktop-worker
+storage-qdrant-0   desktop-worker2
+</code></pre>
+<p><code>local-path</code> disks live on one node's filesystem, so <code>postgres-0</code> can <strong>only</strong> run on <code>desktop-worker</code>
+(Lab 8 shows what happens when that node goes away). In AWS, EBS volumes are pinned to an <strong>availability zone</strong> —
+same idea, bigger scope. That's why production uses <strong>managed databases</strong> (RDS) or replicated DB clusters.</p>
+<h3 id="39-probes-how-kubernetes-knows-your-app-is-healthy">3.9 Probes — how Kubernetes knows your app is healthy</h3>
+<p>Your API has three (<a href="../k8s/base/deployment.yaml">deployment.yaml</a>):</p>
+<table>
+<thead>
+<tr>
+<th>Probe</th>
+<th>Your config</th>
+<th>If it fails</th>
+<th>Question it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>startupProbe</code></td>
+<td><code>/healthz</code>, every 2s, up to 30 times</td>
+<td>keep waiting (up to 60s)</td>
+<td>"Has the app finished booting?"</td>
+</tr>
+<tr>
+<td><code>readinessProbe</code></td>
+<td><code>/readyz</code> (checks Qdrant + Postgres), every 5s</td>
+<td><strong>removed from Service traffic</strong> (not restarted)</td>
+<td>"Can it serve requests right now?"</td>
+</tr>
+<tr>
+<td><code>livenessProbe</code></td>
+<td><code>/healthz</code> (process only), every 10s</td>
+<td><strong>container restarted</strong></td>
+<td>"Is the process stuck/dead?"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The #1 interview question:</strong> <em>"Why doesn't liveness check the database?"</em></p>
+<blockquote>
+<p>If liveness checked Postgres and Postgres blipped, Kubernetes would <strong>restart every API pod at once</strong> — they'd
+come back, Postgres still down, restart again → a cascading failure that turns a DB hiccup into a full outage.
+Readiness is the right tool: pods stop receiving traffic, stay alive, and recover by themselves when the DB returns.</p>
+</blockquote>
+<p>You'll prove this in Lab 4.</p>
+<h3 id="310-resources-requests-limits-qos">3.10 Resources, requests, limits, QoS</h3>
+<pre><code class="language-yaml">resources:
+  requests: { cpu: 250m, memory: 384Mi }   # what the scheduler RESERVES on a node
+  limits:   { memory: 768Mi }              # hard ceiling
+</code></pre>
+<ul>
+<li><strong>CPU units:</strong> <code>1000m</code> = 1 core. <code>250m</code> = a quarter core.</li>
+<li><strong>requests</strong> → used for <strong>scheduling</strong> ("does this node have 250m free?") and for HPA percentages.</li>
+<li><strong>limits</strong> → enforced at runtime. Exceed <strong>memory</strong> limit → container killed: <code>OOMKilled</code>.
+  Exceed <strong>CPU</strong> limit → throttled (slowed), not killed.</li>
+<li><strong>Why no CPU limit?</strong> CPU throttling causes latency spikes for bursty request handlers. Common production
+  practice: set CPU requests, set memory limits, skip CPU limits.</li>
+</ul>
+<p><strong>QoS class</strong> (<code>kubectl describe pod</code> shows it):</p>
+<table>
+<thead>
+<tr>
+<th>QoS</th>
+<th>When</th>
+<th>Evicted first under pressure?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BestEffort</code></td>
+<td>no requests/limits</td>
+<td>yes — first</td>
+</tr>
+<tr>
+<td><code>Burstable</code> (yours)</td>
+<td>requests &lt; limits</td>
+<td>middle</td>
+</tr>
+<tr>
+<td><code>Guaranteed</code></td>
+<td>requests == limits for CPU &amp; memory</td>
+<td>last</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash">kubectl top nodes
+kubectl top pods
+</code></pre>
+<p>Your real numbers (idle):</p>
+<pre><code>NAME                            CPU(cores)   MEMORY(bytes)
+postgres-0                      4m           27Mi
+qdrant-0                        4m           417Mi
+sentinel-rag-666d4d954d-bz4v5   5m           129Mi
+valkey-5b9d54755b-g2dx8         7m           8Mi
+</code></pre>
+<p>(<code>kubectl top</code> needs <strong>metrics-server</strong> — installed and fixed on your cluster with <code>--kubelet-insecure-tls</code>,
+which local clusters need because kubelet certificates are self-signed.)</p>
+<h3 id="311-horizontalpodautoscaler-hpa-automatic-scaling">3.11 HorizontalPodAutoscaler (HPA) — automatic scaling</h3>
+<p><a href="../k8s/base/hpa.yaml">hpa.yaml</a> (dev overlay: min 1, max 3):</p>
+<pre><code class="language-yaml">kind: HorizontalPodAutoscaler
+spec:
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - resource: { name: cpu,    target: { averageUtilization: 65 } }   # % of the CPU *request*
+    - resource: { name: memory, target: { averageUtilization: 75 } }
+  behavior:
+    scaleUp:   { stabilizationWindowSeconds: 0 }     # react immediately
+    scaleDown: { stabilizationWindowSeconds: 300 }   # wait 5 min before removing pods (no flapping)
+</code></pre>
+<p><strong>The math:</strong> <code>desiredReplicas = ceil(currentReplicas × currentUtilization / target)</code>.
+Your load test hit 405%: <code>ceil(1 × 405 / 65) = 7</code> → capped at <code>maxReplicas: 3</code>.</p>
+<p><strong>Real result from your cluster</strong> (Lab 7):</p>
+<pre><code>cpu: 1%/65%    -&gt; 1 pod
+cpu: 405%/65%  -&gt; scaled to 3 pods
+pods landed on desktop-worker, desktop-worker2, desktop-worker3   &lt;- spread across nodes
+</code></pre>
+<h3 id="312-scheduling-where-pods-land">3.12 Scheduling — where pods land</h3>
+<p>The scheduler filters nodes (enough CPU/memory? taints? volume on this node?) then scores them. You influence it with:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Your project</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>taints/tolerations</strong></td>
+<td>control-plane <code>NoSchedule</code></td>
+<td>keep apps off the brain node</td>
+</tr>
+<tr>
+<td><strong>topologySpreadConstraints</strong></td>
+<td>spread by <code>kubernetes.io/hostname</code> (DoNotSchedule) and <code>topology.kubernetes.io/zone</code> (ScheduleAnyway)</td>
+<td>don't put all API pods on one node/zone → survives a node or zone failure</td>
+</tr>
+<tr>
+<td>volume node affinity</td>
+<td>postgres PV on <code>desktop-worker</code></td>
+<td>the pod must go where its disk is</td>
+</tr>
+<tr>
+<td>nodeSelector / affinity</td>
+<td>(not used)</td>
+<td>"only run on GPU nodes" etc.</td>
+</tr>
+</tbody>
+</table>
+<p>Your nodes have no zone labels (local cluster), so the zone rule is ignored ("ScheduleAnyway"); the hostname rule is
+why your 3 pods landed on 3 different workers.</p>
+<h3 id="313-poddisruptionbudget-pdb-protection-during-maintenance">3.13 PodDisruptionBudget (PDB) — protection during maintenance</h3>
+<pre><code class="language-yaml">kind: PodDisruptionBudget
+spec:
+  minAvailable: 2        # prod. Dev overlay patches to 0
+</code></pre>
+<p><strong>Voluntary disruptions</strong> = things humans/tools do on purpose: <code>kubectl drain</code>, cluster upgrades, autoscaler
+removing a node. A PDB says "never evict pods if that would leave fewer than 2 running."
+It does <strong>not</strong> protect against crashes or a node suddenly dying (involuntary disruptions).</p>
+<pre><code class="language-bash">kubectl get pdb
+</code></pre>
+<h3 id="314-networkpolicy-the-cluster-firewall">3.14 NetworkPolicy — the cluster firewall</h3>
+<p>By default <strong>every pod can talk to every pod</strong> in the cluster. Your project locks that down
+(<a href="../k8s/base/networkpolicy.yaml">networkpolicy.yaml</a>):</p>
+<ol>
+<li><code>default-deny-all</code> — block all traffic in and out of every pod in the namespace.</li>
+<li><code>sentinel-rag-api</code> — API may receive from ingress-nginx/monitoring namespaces; may send only to Qdrant,
+   Postgres, Valkey, DNS, and HTTPS (blocking <code>169.254.169.254</code>, the cloud metadata endpoint — a classic SSRF target).</li>
+<li><code>datastores-from-api</code> — databases accept connections <strong>only from API pods</strong>.</li>
+</ol>
+<p><strong>Proven on your cluster</strong> — a pod in another namespace tries to reach Postgres:</p>
+<pre><code class="language-bash">kubectl run np-test -n default --rm -i --restart=Never --image=busybox:1.36 --command -- \
+  sh -c 'nc -z -w 3 postgres.sentinel-rag.svc.cluster.local 5432 &amp;&amp; echo REACHABLE || echo BLOCKED'
+</code></pre>
+<pre><code>BLOCKED
+</code></pre>
+<p>…while the API pod connects fine (<code>api-&gt;postgres OK</code>). NetworkPolicies only work if the network plugin enforces
+them — <code>kindnet</code> on your cluster does; in AWS EKS you enable it in the VPC CNI or use Calico/Cilium.</p>
+<h3 id="315-pod-security-securitycontext-least-privilege">3.15 Pod Security &amp; securityContext — least privilege</h3>
+<p>Your namespace enforces Pod Security <strong>restricted</strong>. Pods that could run as root or escalate privileges are
+<strong>rejected at the door</strong>. Proven:</p>
+<pre><code class="language-bash">kubectl run psa-test --image=busybox:1.36 --dry-run=server -- sleep 5
+</code></pre>
+<pre><code>Error from server (Forbidden): pods &quot;psa-test&quot; is forbidden: violates PodSecurity &quot;restricted:latest&quot;:
+allowPrivilegeEscalation != false ... unrestricted capabilities ... runAsNonRoot != true ...
+</code></pre>
+<p>Your API passes because of:</p>
+<pre><code class="language-yaml">securityContext:
+  runAsNonRoot: true            # never root
+  runAsUser: 10001              # matches USER 10001 in the Dockerfile
+  seccompProfile: { type: RuntimeDefault }   # restrict system calls
+containers:
+  - securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true           # attacker can't write to the filesystem...
+      capabilities: { drop: [ALL] }
+    volumeMounts:
+      - { name: tmp, mountPath: /tmp }       # ...except a small /tmp emptyDir
+</code></pre>
+<h3 id="316-serviceaccount-the-pods-identity">3.16 ServiceAccount — the pod's identity</h3>
+<p><code>serviceaccount/sentinel-rag</code> with <code>automountServiceAccountToken: false</code>: the API doesn't need to call the
+Kubernetes API, so it gets <strong>no token</strong> — if the pod is compromised, the attacker can't use it to control the
+cluster. In AWS, you'd annotate this ServiceAccount with an IAM role (IRSA / Pod Identity) to grant cloud
+permissions without access keys.</p>
+<h3 id="317-ingress-http-routing-from-outside-inactive-locally">3.17 Ingress — HTTP routing from outside (inactive locally)</h3>
+<p><a href="../k8s/base/ingress.yaml">ingress.yaml</a> routes <code>sentinel.example.com</code> → Service <code>sentinel-rag</code>, with TLS,
+rate limits and SSE settings. An Ingress is only <strong>rules</strong>; an <strong>Ingress controller</strong> (nginx, AWS Load Balancer
+Controller) must be installed to act on them.</p>
+<pre><code class="language-bash">kubectl get ingressclass      # &quot;No resources found&quot; on your cluster -&gt; no controller -&gt; Ingress does nothing
+</code></pre>
+<p>That's why locally we use <code>port-forward</code>. In production: Internet → cloud load balancer → ingress controller → Service → pods.</p>
+<h3 id="318-kustomize-one-set-of-yaml-many-environments">3.18 Kustomize — one set of YAML, many environments</h3>
+<pre><code>k8s/
+  base/                 everything common (Deployment, Service, HPA, PDB, NetworkPolicy...)
+  datastores/           qdrant, postgres, valkey
+  overlays/
+    dev/                base + all datastores, 1 replica, local image, secrets from secrets.env
+    prod/               base + qdrant only, managed DBs, Vault secrets, real LLM, pinned image digest
+</code></pre>
+<p>An overlay <strong>patches</strong> the base instead of copying it. See the final YAML Kubernetes receives:</p>
+<pre><code class="language-bash">kubectl kustomize k8s/overlays/dev | less
+kubectl kustomize k8s/overlays/prod | less
+</code></pre>
+<p>Compare them — that diff <em>is</em> the difference between your laptop and production.</p>
+<hr />
+<h2 id="part-4-follow-one-request-through-the-cluster">Part 4 — Follow one request through the cluster</h2>
+<p>You click <strong>Execute</strong> on <code>POST /v1/query</code> in Swagger:</p>
+<pre><code>1. Browser -&gt; localhost:8000
+2. kubectl port-forward tunnel -&gt; Service sentinel-rag:80 -&gt; one Ready API pod :8000
+3. FastAPI: auth (X-API-Key hash from the Secret) -&gt; rate limit (Valkey via Service &quot;valkey&quot;)
+4. LangGraph agent:
+     dense + sparse search -&gt; Service &quot;qdrant&quot; -&gt; qdrant-0     (data on PVC storage-qdrant-0)
+     knowledge graph       -&gt; Service &quot;postgres&quot; -&gt; postgres-0 (data on PVC data-postgres-0)
+5. Every hop above is allowed by a NetworkPolicy; every name resolved by CoreDNS
+6. Response + JSON log line (kubectl logs) + Prometheus metrics (/metrics)
+</code></pre>
+<p>In production, step 1–2 becomes: Internet → AWS load balancer → ingress-nginx → Service → pods (HPA 3–20).</p>
+<hr />
+<h2 id="part-5-what-make-k8s-up-does-line-by-line">Part 5 — What <code>make k8s-up</code> does, line by line</h2>
+<p><a href="../scripts/k8s_local.sh">scripts/k8s_local.sh</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command</th>
+<th>K8s concept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safety check</td>
+<td>refuses unless context is local (docker-desktop, kind-*, minikube…)</td>
+<td>never deploy to the wrong cluster</td>
+</tr>
+<tr>
+<td>API key</td>
+<td>writes only the <strong>SHA-256 hash</strong> to <code>.env</code></td>
+<td>secrets hygiene</td>
+</tr>
+<tr>
+<td>Secrets file</td>
+<td>random passwords → <code>k8s/overlays/dev/secrets.env</code> (git-ignored)</td>
+<td>Kustomize <code>secretGenerator</code> input</td>
+</tr>
+<tr>
+<td>Build</td>
+<td><code>docker build</code> → tag <code>sentinel-rag:local-&lt;content-hash&gt;</code></td>
+<td><strong>immutable tags</strong> — nodes cache by tag, so a reused tag runs stale code</td>
+</tr>
+<tr>
+<td>Apply</td>
+<td><code>kubectl kustomize … \| sed &lt;pin tag&gt; \| kubectl apply -f -</code></td>
+<td>declarative deploy, exactly one rolling update</td>
+</tr>
+<tr>
+<td>Wait</td>
+<td><code>kubectl rollout status</code> for each workload</td>
+<td>deploy isn't "done" until pods are Ready</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-6-hands-on-labs-do-them-in-order">Part 6 — Hands-on labs (do them in order)</h2>
+<blockquote>
+<p>Keep a second terminal open running <code>kubectl get pods -o wide -w</code> (<code>-w</code> = watch live). It's like a live video of the cluster.</p>
+</blockquote>
+<h3 id="lab-1-explore-10-min">Lab 1 — Explore (10 min)</h3>
+<pre><code class="language-bash">kubectl get all
+kubectl describe deploy sentinel-rag
+kubectl get pod postgres-0 -o yaml | less        # the FULL object, incl. status Kubernetes added
+kubectl explain deployment.spec.strategy          # built-in docs for any field
+</code></pre>
+<p>✅ You can explain: Deployment → ReplicaSet → Pod, and what <code>READY 1/1</code> means.</p>
+<h3 id="lab-2-self-healing-5-min">Lab 2 — Self-healing (5 min)</h3>
+<pre><code class="language-bash">kubectl delete pod -l app.kubernetes.io/component=api
+</code></pre>
+<p>Watch terminal 2: a new pod with a <strong>new name</strong> appears within seconds.
+✅ Explain using the reconciliation loop (desired 1, actual 0 → create).</p>
+<h3 id="lab-3-statefulset-identity-persistence-5-min">Lab 3 — StatefulSet identity &amp; persistence (5 min)</h3>
+<pre><code class="language-bash">kubectl exec postgres-0 -- psql -U sentinel -d sentinel -tAc &quot;select count(*) from kg_triples&quot;
+kubectl delete pod postgres-0
+kubectl get pods -w                                # comes back as postgres-0 (same name!)
+kubectl exec postgres-0 -- psql -U sentinel -d sentinel -tAc &quot;select count(*) from kg_triples&quot;
+</code></pre>
+<p>✅ Same count both times (yours: 19). Explain PVC → PV, and why Deployments can't do this.</p>
+<h3 id="lab-4-readiness-vs-liveness-10-min">Lab 4 — Readiness vs liveness ⭐ (10 min)</h3>
+<pre><code class="language-bash">kubectl scale statefulset postgres --replicas=0          # simulate a database outage
+kubectl get pods -w                                       # API becomes 0/1 READY — but RESTARTS stays 0
+kubectl get endpointslices -l kubernetes.io/service-name=sentinel-rag \
+  -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]}{&quot;  ready=&quot;}{.conditions.ready}{&quot;\n&quot;}{end}'
+# -&gt; every API pod shows ready=false: no traffic is sent to them
+kubectl logs deploy/sentinel-rag --tail=5
+kubectl scale statefulset postgres --replicas=1          # database returns
+kubectl get pods -w                                       # API goes back to 1/1 by itself
+</code></pre>
+<p>Your real result:</p>
+<pre><code>during outage:   sentinel-rag-…-56kcr  0/1  Running  restarts=0   (all 3 pods)
+after recovery:  sentinel-rag-…-bz4v5  1/1  Running  restarts=0
+</code></pre>
+<p>✅ You just demonstrated the #1 K8s interview answer. Explain why liveness must not check the DB.</p>
+<h3 id="lab-5-scale-manually-watch-spreading-5-min">Lab 5 — Scale manually &amp; watch spreading (5 min)</h3>
+<pre><code class="language-bash">kubectl scale deploy sentinel-rag --replicas=3
+kubectl get pods -o wide -l app.kubernetes.io/component=api      # 3 pods on 3 different workers
+kubectl get endpointslices -l kubernetes.io/service-name=sentinel-rag \
+  -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]}{&quot;  ready=&quot;}{.conditions.ready}{&quot;\n&quot;}{end}'
+# -&gt; 3 IPs, all ready=true, behind one Service
+</code></pre>
+<p>✅ Explain topologySpreadConstraints. (The HPA will eventually scale it back to its own decision.)</p>
+<h3 id="lab-6-rolling-update-and-rollback-10-min">Lab 6 — Rolling update and rollback (10 min)</h3>
+<pre><code class="language-bash">kubectl set env deploy/sentinel-rag LOG_LEVEL=WARNING     # imperative change to the pod template
+kubectl rollout status deploy/sentinel-rag
+kubectl rollout history deploy/sentinel-rag
+kubectl rollout undo deploy/sentinel-rag                  # back to previous
+</code></pre>
+<p>Then run <code>make k8s-up</code> — any imperative change is replaced by what's in Git/YAML.
+✅ Explain declarative vs imperative and why production uses GitOps (Argo CD) to prevent "drift".</p>
+<h3 id="lab-7-autoscaling-under-real-load-10-min">Lab 7 — Autoscaling under real load ⭐ (10 min)</h3>
+<p>Terminal 1:</p>
+<pre><code class="language-bash">make k8s-forward
+</code></pre>
+<p>Terminal 2:</p>
+<pre><code class="language-bash">.venv/bin/python scripts/load_test.py --seconds 120 --concurrency 40
+</code></pre>
+<p>Terminal 3:</p>
+<pre><code class="language-bash">kubectl get hpa sentinel-rag -w
+</code></pre>
+<p>Your real result: CPU went from <code>1%</code> → <code>405%</code> of request and the HPA scaled <strong>1 → 3 pods</strong>. After the test,
+wait ~5 minutes (the <code>scaleDown</code> stabilization window) and watch it go back to 1.</p>
+<p>Subtle point to mention in interviews: <code>port-forward</code> sends all traffic to <strong>one</strong> pod, so this lab tests the HPA,
+not load balancing. Real traffic through a Service/Ingress is spread across all pods.
+✅ Explain the HPA formula, why requests matter, and why scale-down is slow.</p>
+<h3 id="lab-8-node-failure-maintenance-15-min">Lab 8 — Node failure / maintenance (15 min)</h3>
+<pre><code class="language-bash">kubectl get pods -o wide                                  # see which pods are on desktop-worker3
+kubectl drain desktop-worker3 --ignore-daemonsets --delete-emptydir-data
+kubectl get nodes                                         # desktop-worker3: Ready,SchedulingDisabled
+kubectl get pods -o wide                                  # its pods were moved to other workers
+kubectl uncordon desktop-worker3                          # allow scheduling again
+</code></pre>
+<p>Now the interesting one — drain the node holding Postgres's disk:</p>
+<pre><code class="language-bash">kubectl drain desktop-worker --ignore-daemonsets --delete-emptydir-data
+kubectl get pods -o wide                                  # postgres-0 stays Pending!
+kubectl describe pod postgres-0 | tail -5                 # &quot;volume node affinity conflict&quot;
+kubectl uncordon desktop-worker                           # postgres-0 schedules again, data intact
+</code></pre>
+<p>✅ Explain cordon vs drain, PDBs, and why stateful workloads + node-local storage are a risk
+(→ managed databases or replicated storage in production).</p>
+<h3 id="lab-9-configmap-changes-need-a-restart-5-min">Lab 9 — ConfigMap changes need a restart (5 min)</h3>
+<pre><code class="language-bash">kubectl exec deploy/sentinel-rag -- printenv LOG_LEVEL                  # DEBUG
+kubectl patch configmap sentinel-rag-config -p '{&quot;data&quot;:{&quot;LOG_LEVEL&quot;:&quot;INFO&quot;}}'
+kubectl exec deploy/sentinel-rag -- printenv LOG_LEVEL                  # still DEBUG!
+kubectl rollout restart deploy/sentinel-rag &amp;&amp; kubectl rollout status deploy/sentinel-rag
+kubectl exec deploy/sentinel-rag -- printenv LOG_LEVEL                  # INFO
+</code></pre>
+<p>✅ Explain why, and how hash-suffixed generators (like your Secret) solve it.</p>
+<h3 id="lab-10-debug-a-broken-deployment-10-min">Lab 10 — Debug a broken deployment (10 min)</h3>
+<pre><code class="language-bash">kubectl set image deploy/sentinel-rag api=sentinel-rag:doesnotexist
+kubectl get pods                                  # new pod: ErrImagePull / ImagePullBackOff
+                                                  # OLD pod still Running -&gt; users unaffected (maxUnavailable: 0)
+kubectl describe pod &lt;the-new-pod&gt; | tail -8      # Events explain the failure
+kubectl rollout undo deploy/sentinel-rag
+</code></pre>
+<p>✅ Explain why a bad deploy didn't cause downtime.</p>
+<h3 id="lab-11-network-firewall-5-min">Lab 11 — Network firewall (5 min)</h3>
+<p>Run the <code>np-test</code> command from section 3.14 → <code>BLOCKED</code>. Then:</p>
+<pre><code class="language-bash">kubectl exec deploy/sentinel-rag -- python -c &quot;import socket;socket.create_connection(('postgres',5432),3);print('OK')&quot;
+</code></pre>
+<p>✅ Explain default-deny and why the metadata IP <code>169.254.169.254</code> is blocked.</p>
+<h3 id="lab-12-security-gate-2-min">Lab 12 — Security gate (2 min)</h3>
+<p>Run the <code>psa-test</code> command from section 3.15 → <code>Forbidden</code>.
+✅ Explain Pod Security Standards and each line of your securityContext.</p>
+<h3 id="lab-13-inside-the-pods-10-min">Lab 13 — Inside the pods (10 min)</h3>
+<pre><code class="language-bash">kubectl exec -it deploy/sentinel-rag -- sh
+  id                       # uid=10001 -&gt; not root
+  touch /app-test          # fails: read-only filesystem
+  touch /tmp/ok &amp;&amp; echo ok # works: /tmp is an emptyDir
+  exit
+kubectl exec -it postgres-0 -- psql -U sentinel -d sentinel -c &quot;\d kg_triples&quot;
+kubectl port-forward svc/qdrant 6333:6333        # then open http://localhost:6333/dashboard
+</code></pre>
+<hr />
+<h2 id="part-7-troubleshooting-playbook">Part 7 — Troubleshooting playbook</h2>
+<p><strong>Always go wide → narrow:</strong></p>
+<pre><code>kubectl get pods -o wide                 1. which pod, what status, which node, restarts?
+kubectl describe pod &lt;pod&gt;               2. read EVENTS at the bottom — answers 90% of problems
+kubectl logs &lt;pod&gt; [--previous]          3. what did the app print? --previous = the crashed run
+kubectl get events --sort-by=.lastTimestamp   4. cluster timeline
+kubectl exec -it &lt;pod&gt; -- sh             5. test from inside (DNS, connectivity, files)
+kubectl top pods                         6. resource usage
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pending</code></td>
+<td>no node has enough CPU/memory; PVC unbound; volume on a cordoned node; taint</td>
+<td><code>describe pod</code> → Events</td>
+</tr>
+<tr>
+<td><code>ImagePullBackOff</code> / <code>ErrImagePull</code></td>
+<td>wrong image name/tag; image not available to the node</td>
+<td>check image; <code>make k8s-up</code></td>
+</tr>
+<tr>
+<td><code>CrashLoopBackOff</code></td>
+<td>app crashes at startup (bad config, missing env, exception)</td>
+<td><code>kubectl logs &lt;pod&gt; --previous</code></td>
+</tr>
+<tr>
+<td><code>Running</code> but <code>0/1</code> READY</td>
+<td>readiness failing (dependency down)</td>
+<td><code>curl localhost:8000/readyz</code> via port-forward; check DB pods</td>
+</tr>
+<tr>
+<td><code>OOMKilled</code> (in describe → Last State)</td>
+<td>exceeded memory limit</td>
+<td>raise <code>limits.memory</code> or fix the leak</td>
+</tr>
+<tr>
+<td><code>CreateContainerConfigError</code></td>
+<td>missing Secret/ConfigMap or key</td>
+<td><code>kubectl get secret,cm</code>; check <code>secrets.env</code></td>
+</tr>
+<tr>
+<td><code>Error from server (NotFound)</code></td>
+<td>wrong namespace or old pod name</td>
+<td><code>-n sentinel-rag</code>; use <code>deploy/sentinel-rag</code></td>
+</tr>
+<tr>
+<td><code>Forbidden … PodSecurity</code></td>
+<td>pod violates <code>restricted</code></td>
+<td>add securityContext fields from 3.15</td>
+</tr>
+<tr>
+<td>HPA <code>&lt;unknown&gt;</code></td>
+<td>metrics-server missing or not ready</td>
+<td>install/patch metrics-server</td>
+</tr>
+<tr>
+<td>port-forward stops working</td>
+<td>the pod it was attached to was replaced</td>
+<td>restart <code>make k8s-forward</code></td>
+</tr>
+<tr>
+<td>Changes "not applied"</td>
+<td>same image tag cached / ConfigMap without restart</td>
+<td>unique tags; <code>rollout restart</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-8-kubectl-cheat-sheet">Part 8 — kubectl cheat sheet</h2>
+<pre><code class="language-bash"># context &amp; namespace
+kubectl config get-contexts
+kubectl config use-context docker-desktop
+kubectl config set-context --current --namespace=sentinel-rag
+
+# look
+kubectl get pods -o wide            kubectl get all             kubectl get pods -w
+kubectl describe &lt;kind&gt; &lt;name&gt;      kubectl get &lt;kind&gt; &lt;name&gt; -o yaml
+kubectl logs -f deploy/sentinel-rag kubectl logs &lt;pod&gt; --previous
+kubectl top nodes                   kubectl top pods
+kubectl get events --sort-by=.lastTimestamp
+kubectl explain &lt;kind&gt;.spec         # docs for any field
+
+# act
+kubectl apply -k k8s/overlays/dev   kubectl delete -k k8s/overlays/dev
+kubectl scale deploy/&lt;name&gt; --replicas=3
+kubectl rollout status|history|undo|restart deploy/&lt;name&gt;
+kubectl exec -it &lt;pod&gt; -- sh        kubectl port-forward svc/&lt;svc&gt; 8000:80
+kubectl cordon|uncordon|drain &lt;node&gt;
+
+# project shortcuts
+make k8s-up   make k8s-forward   make k8s-status   make k8s-logs   make k8s-down
+</code></pre>
+<hr />
+<h2 id="part-9-local-vs-production-aws-eks">Part 9 — Local vs production (AWS EKS)</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Your laptop</th>
+<th>Production (e.g. EKS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control plane</td>
+<td>kind container</td>
+<td>managed by AWS (you never see etcd)</td>
+</tr>
+<tr>
+<td>Nodes</td>
+<td>4 containers, fixed</td>
+<td>EC2 nodes added/removed by Karpenter / Cluster Autoscaler</td>
+</tr>
+<tr>
+<td>Traffic in</td>
+<td><code>port-forward</code></td>
+<td>Route 53 → ALB/NLB → ingress controller → Service</td>
+</tr>
+<tr>
+<td>Images</td>
+<td>local Docker, <code>:local-&lt;hash&gt;</code></td>
+<td>registry (ECR), pinned <strong>digest</strong>, Trivy-scanned in CI</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td><code>secrets.env</code> → secretGenerator</td>
+<td>Vault / AWS Secrets Manager → External Secrets Operator</td>
+</tr>
+<tr>
+<td>Postgres / Valkey</td>
+<td>in-cluster StatefulSet / Deployment</td>
+<td>RDS/Aurora, ElastiCache (Multi-AZ, backups)</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>1 replica, local-path disk</td>
+<td>replicated, gp3 EBS, snapshots</td>
+</tr>
+<tr>
+<td>API replicas</td>
+<td>1–3</td>
+<td>3–20 across 3 availability zones</td>
+</tr>
+<tr>
+<td>Deploys</td>
+<td><code>make k8s-up</code></td>
+<td>GitOps: merge PR → CI builds image → Argo CD syncs → canary (Argo Rollouts)</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td><code>kubectl top</code>, logs</td>
+<td>Prometheus + Grafana / Datadog, alerts from <code>servicemonitor.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-10-kubernetes-interview-questions-with-answers">Part 10 — Kubernetes interview questions (with answers)</h2>
+<ol>
+<li><strong>What is a Pod vs a container?</strong> A pod wraps one or more containers sharing network and storage; it's the
+   unit K8s schedules. Containers in one pod are always on the same node.</li>
+<li><strong>Deployment vs StatefulSet?</strong> Deployment: identical, disposable, stateless replicas with random names.
+   StatefulSet: stable names (<code>-0</code>), one persistent volume per pod, ordered rollout — for databases.</li>
+<li><strong>Deployment vs ReplicaSet?</strong> ReplicaSet keeps N pods; Deployment manages ReplicaSets to do rolling updates and rollbacks.</li>
+<li><strong>How do pods find each other?</strong> Services provide stable virtual IPs + DNS names via CoreDNS; pods are
+   selected by labels.</li>
+<li><strong>ClusterIP vs NodePort vs LoadBalancer vs Ingress?</strong> See 3.5 and 3.17.</li>
+<li><strong>Liveness vs readiness vs startup probes?</strong> See 3.9 — and why liveness must not check dependencies.</li>
+<li><strong>How does a rolling update achieve zero downtime?</strong> <code>maxUnavailable: 0</code>, readiness gates traffic, preStop
+   sleep for load-balancer deregistration, graceful shutdown, PDB during maintenance.</li>
+<li><strong>Requests vs limits?</strong> Requests reserve capacity and drive scheduling + HPA; limits cap usage. Memory over
+   limit → OOMKilled; CPU over limit → throttled.</li>
+<li><strong>How does the HPA decide?</strong> <code>ceil(current × utilization / target)</code>, bounded by min/max, with stabilization windows.</li>
+<li><strong>What happens when a node dies?</strong> Node goes <code>NotReady</code>; after the toleration timeout (default 300s) its pods
+    are evicted and recreated elsewhere by their controllers. Stateful pods need their volume to be reachable.</li>
+<li><strong>How do you store secrets safely?</strong> Not in Git; external secret manager + ESO/CSI driver; RBAC; etcd
+    encryption at rest; never in logs. Base64 is not encryption.</li>
+<li><strong>What's a NetworkPolicy?</strong> A pod-level firewall by labels/namespaces; needs a CNI that enforces it; best
+    practice is default-deny + explicit allows.</li>
+<li><strong>What's a PDB?</strong> Limits voluntary evictions (drain, upgrades) so availability stays above a floor.</li>
+<li><strong>Taints/tolerations vs node affinity?</strong> Taints repel pods from nodes (unless tolerated); affinity attracts
+    pods to nodes.</li>
+<li><strong>How do you debug CrashLoopBackOff?</strong> <code>describe</code> → Events, <code>logs --previous</code>, check config/env, probes too
+    aggressive?, OOMKilled?</li>
+<li><strong>Why immutable image tags?</strong> Reused tags (<code>:latest</code>) may not be re-pulled, rollbacks become ambiguous, and you
+    can't tell what's running. Use unique tags or digests.</li>
+<li><strong>ConfigMap changed but app didn't — why?</strong> Env vars are read at start; restart or use hash-suffixed generators.</li>
+<li><strong>What is etcd and why care?</strong> The cluster's key-value database; losing it means losing cluster state → backups, HA (3/5 members).</li>
+<li><strong>What does the scheduler consider?</strong> Resource requests, taints, affinity, topology spread, volume location, then scoring.</li>
+<li><strong>How would you scale this AI service to 10× traffic?</strong> HPA on CPU (or custom metrics like requests in
+    flight / queue depth via KEDA), cluster autoscaler for nodes, cache, LLM concurrency bulkheads, async
+    ingestion queue, managed databases, multi-AZ spread.</li>
+</ol>
+<hr />
+<h2 id="part-11-glossary">Part 11 — Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>One-line meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cluster</td>
+<td>A set of nodes managed as one by a control plane</td>
+</tr>
+<tr>
+<td>Node</td>
+<td>A machine (VM/server) that runs pods</td>
+</tr>
+<tr>
+<td>Control plane</td>
+<td>API server + etcd + scheduler + controller manager</td>
+</tr>
+<tr>
+<td>kubelet</td>
+<td>Node agent that runs pods and probes</td>
+</tr>
+<tr>
+<td>Pod</td>
+<td>Smallest deployable unit: container(s) sharing IP/storage</td>
+</tr>
+<tr>
+<td>ReplicaSet</td>
+<td>Keeps N identical pods running</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Manages ReplicaSets for rolling updates/rollbacks</td>
+</tr>
+<tr>
+<td>StatefulSet</td>
+<td>Like Deployment but stable identity + per-pod storage</td>
+</tr>
+<tr>
+<td>DaemonSet</td>
+<td>One pod on every node (agents, networking)</td>
+</tr>
+<tr>
+<td>Job / CronJob</td>
+<td>Run-to-completion task / on a schedule</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>Stable IP/DNS + load balancing to ready pods</td>
+</tr>
+<tr>
+<td>EndpointSlice</td>
+<td>The list of pod IPs currently behind a Service</td>
+</tr>
+<tr>
+<td>Ingress</td>
+<td>HTTP routing rules from outside (needs a controller)</td>
+</tr>
+<tr>
+<td>ConfigMap / Secret</td>
+<td>Configuration / sensitive configuration</td>
+</tr>
+<tr>
+<td>PVC / PV / StorageClass</td>
+<td>Disk request / actual disk / how disks are made</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td>Folder-like scope for names, policies, quotas</td>
+</tr>
+<tr>
+<td>Label / Selector</td>
+<td>Tags on objects / queries that match tags</td>
+</tr>
+<tr>
+<td>Probe</td>
+<td>Health check: startup, readiness, liveness</td>
+</tr>
+<tr>
+<td>HPA</td>
+<td>Scales replicas by metrics</td>
+</tr>
+<tr>
+<td>PDB</td>
+<td>Minimum availability during voluntary disruptions</td>
+</tr>
+<tr>
+<td>NetworkPolicy</td>
+<td>Pod-level firewall rules</td>
+</tr>
+<tr>
+<td>Taint / Toleration</td>
+<td>Node "keep out" sign / pod's permission to ignore it</td>
+</tr>
+<tr>
+<td>CNI</td>
+<td>Network plugin giving pods IPs (kindnet, Calico, Cilium, AWS VPC CNI)</td>
+</tr>
+<tr>
+<td>Kustomize</td>
+<td>Base + overlays YAML customization built into kubectl</td>
+</tr>
+<tr>
+<td>Reconciliation</td>
+<td>Controllers continuously moving actual state toward desired state</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="part-12-10-day-plan-3060-minday">Part 12 — 10-day plan (30–60 min/day)</h2>
+<table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Read</th>
+<th>Do</th>
+<th>You're done when you can...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Parts 1–2</td>
+<td>Lab 1</td>
+<td>Explain desired state + name the 4 control-plane components</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3.1–3.4</td>
+<td>Labs 2, 5</td>
+<td>Explain Pod → ReplicaSet → Deployment and labels/selectors</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3.5–3.7</td>
+<td>Lab 9, DNS command</td>
+<td>Explain Services, DNS, ConfigMap vs Secret</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3.8</td>
+<td>Lab 3</td>
+<td>Explain StatefulSet, PVC/PV/StorageClass</td>
+</tr>
+<tr>
+<td>5</td>
+<td>3.9</td>
+<td>Lab 4 ⭐</td>
+<td>Whiteboard liveness vs readiness with the cascading-failure story</td>
+</tr>
+<tr>
+<td>6</td>
+<td>3.10–3.11</td>
+<td>Lab 7 ⭐</td>
+<td>Do the HPA math; explain requests/limits/QoS</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3.12–3.13</td>
+<td>Lab 8</td>
+<td>Explain scheduling, drain, PDB, node failure</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3.14–3.16</td>
+<td>Labs 11–13</td>
+<td>Explain default-deny, Pod Security, least privilege</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3.17–3.18, Parts 4–5</td>
+<td>Lab 6, Lab 10</td>
+<td>Explain rolling updates, rollback, Kustomize overlays</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Parts 7, 9, 10</td>
+<td>Mock interview with Part 10</td>
+<td>Answer all 20 questions without notes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Final test:</strong> reset everything and rebuild from scratch, explaining each step out loud:</p>
+<pre><code class="language-bash">make k8s-down
+make k8s-up
+</code></pre></main></div>
+<script>
+document.querySelectorAll('main table').forEach(t=>{const w=document.createElement('div');w.className='tbl';t.before(w);w.append(t)});
+function t(){const r=document.documentElement;const d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=d?'light':'dark'}
+const links=[...document.querySelectorAll('nav a')];const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'0px 0px -75% 0px'});
+document.querySelectorAll('main h2[id]').forEach(h=>io.observe(h));
+</script></body></html>

@@ -246,6 +246,11 @@ Cross-encoder reranker · conversation memory with LangGraph checkpointer · asy
 large corpora · document-level ACLs · OpenTelemetry tracing · ML-based injection classifier ensembled with the
 rule engine · Helm chart.
 
+## Learning guides
+
+- [docs/STUDY_GUIDE.md](docs/STUDY_GUIDE.md) ([HTML](docs/STUDY_GUIDE.html)): code walkthrough and interview prep
+- [docs/K8S_HANDS_ON.md](docs/K8S_HANDS_ON.md) ([HTML](docs/K8S_HANDS_ON.html)): Kubernetes from zero, with 13 hands-on labs on this project
+
 ## Licenses
 
 All dependencies and images use permissive licenses: FastAPI, Pydantic, LangChain, LangGraph, structlog, redis-py
